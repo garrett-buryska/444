@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gym App Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #1e1e1e;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .dashboard-container {
+        background-color: #2d2d2d;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        width: 300px;
+        text-align: center;
+      }
+      h2 {
+        margin-top: 0;
+        color: #55ff55;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 20px;
+        background-color: #ff5555;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background-color: #cc0000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <h2 id="welcomeMessage">Loading...</h2>
+      <p>Welcome to your dashboard.</p>
+      <button id="logoutBtn">Log Out</button>
+    </div>
+
+    <script>
+      // 1. Check if the user is logged in
+      const currentUser = localStorage.getItem("gymUser");
+
+      if (!currentUser) {
+        // If there is no user in localStorage, kick them back to the login screen
+        window.location.href = "index.html";
+      } else {
+        // 2. If they are logged in, update the screen with their name
+        document.getElementById("welcomeMessage").textContent =
+          "Hello, " + currentUser + "!";
+      }
+
+      // 3. Handle the Log Out button
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", function () {
+          // Remove the user from storage
+          localStorage.removeItem("gymUser");
+
+          // Send them back to the login page
+          window.location.href = "index.html";
+        });
+    </script>
+  </body>
+</html>
