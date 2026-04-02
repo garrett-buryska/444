@@ -52,6 +52,20 @@ body {
   color: #00d1b2;
 }
 
+.nav-links button {
+  background: none;
+  border: none;
+  color: white;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.nav-links button:hover {
+  color: #00d1b2;
+}
+
 .logout-link {
   color: #ff3860 !important;
   /* Red for logout */
@@ -123,7 +137,7 @@ body {
 }
 
 .profile-page {
-  padding: 28px;
+  padding: 16px 24px 18px;
 }
 
 .profile-panel {
@@ -138,7 +152,7 @@ body {
 }
 
 .profile-heading {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .profile-heading-copy {
@@ -147,28 +161,28 @@ body {
 
 .profile-kicker {
   color: #666;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .profile-heading h1 {
-  font-size: 3rem;
+  font-size: 2.35rem;
   line-height: 1.05;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   color: #1a1a1a;
 }
 
 .profile-subtitle {
   color: #555;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
 }
 
 .profile-grid {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 18px;
   align-items: start;
 }
 
@@ -176,12 +190,12 @@ body {
   background-color: #ffffff;
   border: 1px solid #d9d9d9;
   border-radius: 18px;
-  padding: 28px 22px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .profile-section {
@@ -191,8 +205,8 @@ body {
 }
 
 .profile-avatar {
-  width: 170px;
-  height: 170px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   border: 4px solid #1f1f1f;
   background: linear-gradient(145deg, #fafafa, #dcdcdc);
@@ -203,48 +217,49 @@ body {
 }
 
 .profile-summary h2 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #1a1a1a;
 }
 
 .profile-summary p {
   color: #5c5c5c;
-  line-height: 1.5;
+  line-height: 1.4;
+  font-size: 0.9rem;
 }
 
 .profile-form {
   display: grid;
-  gap: 18px;
+  gap: 12px;
 }
 
 .profile-section {
   background-color: #ffffff;
   border: 1px solid #d9d9d9;
   border-radius: 18px;
-  padding: 24px;
+  padding: 18px;
 }
 
 .profile-section h2 {
-  font-size: 1.15rem;
-  margin-bottom: 18px;
+  font-size: 1rem;
+  margin-bottom: 12px;
   color: #1a1a1a;
 }
 
 .profile-section + .profile-section {
-  padding-top: 24px;
+  padding-top: 18px;
   border-top: none;
 }
 
 .profile-field {
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .profile-field label,
 .skill-level-label {
   display: block;
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 500;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: #1a1a1a;
 }
 
@@ -258,9 +273,9 @@ body {
 
 .profile-input {
   width: 100%;
-  height: 52px;
-  padding: 0 16px;
-  font-size: 1rem;
+  height: 42px;
+  padding: 0 14px;
+  font-size: 0.92rem;
 }
 
 .profile-input[readonly] {
@@ -275,21 +290,21 @@ body {
 .profile-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .skill-level-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .skill-chip {
-  height: 52px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -311,8 +326,8 @@ body {
 }
 
 .profile-message {
-  min-height: 24px;
-  font-size: 0.95rem;
+  min-height: 18px;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 
@@ -327,16 +342,16 @@ body {
 .profile-actions {
   display: flex;
   justify-content: flex-end;
-  padding-top: 2px;
+  padding-top: 0;
 }
 
 .profile-save-button {
-  min-width: 220px;
-  height: 52px;
+  min-width: 180px;
+  height: 42px;
   border: 1px solid #1f1f1f;
   background-color: #1f1f1f;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
   border-radius: 12px;
@@ -359,6 +374,50 @@ body {
   .profile-grid {
     grid-template-columns: 1fr;
   }
+
+  .profile-summary {
+    padding: 18px;
+  }
+
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+@media (max-height: 900px) and (min-width: 961px) {
+  .profile-page {
+    padding: 10px 20px 12px;
+  }
+
+  .profile-heading {
+    margin-bottom: 12px;
+  }
+
+  .profile-heading h1 {
+    font-size: 2.1rem;
+  }
+
+  .profile-grid {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .profile-summary,
+  .profile-section {
+    padding: 16px;
+  }
+
+  .profile-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .profile-input,
+  .skill-chip,
+  .profile-save-button {
+    height: 40px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -373,11 +432,11 @@ body {
   }
 
   .profile-page {
-    padding: 14px;
+    padding: 12px;
   }
 
   .profile-heading h1 {
-    font-size: 2.35rem;
+    font-size: 1.95rem;
   }
 
   .profile-section,
