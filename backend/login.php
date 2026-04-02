@@ -26,7 +26,7 @@ try {
 
     // Prepare the SQL statement to prevent SQL injection
     // Note: Adjust table/column names if they differ from what's in your DB
-    $stmt = $pdo->prepare("SELECT * FROM login WHERE username = :username AND password = :password");
+    $stmt = $pdo->prepare("SELECT * FROM User WHERE username = :username AND password = :password");
 
     // Execute the query
     $stmt->execute([
