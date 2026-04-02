@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gym App Login</title>
+    <script src="helpers.js"></script>
+    <script>
+      if (loggedIn()) {
+        window.location.href = "workouts.html";
+      }
+    </script>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -43,6 +49,13 @@
       button:hover {
         background-color: #005f9e;
       }
+      .signup-btn {
+        background-color: #28a745;
+        margin-top: 10px;
+      }
+      .signup-btn:hover {
+        background-color: #218838;
+      }
       #message {
         margin-top: 15px;
         text-align: center;
@@ -63,6 +76,13 @@
         <input type="text" id="username" placeholder="Username" required />
         <input type="password" id="password" placeholder="Password" required />
         <button type="submit">Sign In</button>
+        <button
+          type="button"
+          class="signup-btn"
+          onclick="window.location.href = 'create-account.html'"
+        >
+          Sign Up
+        </button>
       </form>
       <div id="message"></div>
     </div>
@@ -95,7 +115,7 @@
                 localStorage.setItem("gymUser", user);
 
                 // Redirect to the new dashboard page
-                window.location.href = "dashboard.html";
+                window.location.href = "workouts.html";
               } else {
                 messageDiv.className = "error";
                 messageDiv.textContent = data.message;
