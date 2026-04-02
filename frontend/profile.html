@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jim's Gym Profile</title>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="nav-brand">Jim's Gym</a>
+        <ul class="nav-links">
+            <li><a href="profile.html">My Profile</a></li>
+            <li><a href="workouts.html">Workouts</a></li>
+            <li><a href="login.html" class="logout-link">Logout</a></li>
+        </ul>
+    </nav>
+
+    <main class="profile-page">
+        <section class="profile-panel">
+            <div class="profile-heading">
+                <div class="profile-heading-copy">
+                    <p class="profile-kicker">Account</p>
+                    <h1>Your Profile</h1>
+                    <p class="profile-subtitle">Keep your basic gym information in one place.</p>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <aside class="profile-summary">
+                    <div class="profile-avatar profile-avatar-inline" aria-label="Blank profile image placeholder"></div>
+                    <h2>Profile Preview</h2>
+                    <p>Set up your member details and training level here.</p>
+                </aside>
+
+                <form class="profile-form">
+                    <section class="profile-section profile-section-main">
+                        <h2>Basic Info</h2>
+                        <div class="profile-field">
+                            <label for="username">Username</label>
+                            <input class="profile-input" id="username" type="text" readonly>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="name">Name</label>
+                            <input class="profile-input" id="name" type="text" placeholder="Enter your name">
+                        </div>
+
+                        <div class="profile-row">
+                            <div class="profile-field">
+                                <label for="dob">Date of Birth</label>
+                                <input class="profile-input" id="dob" type="date">
+                            </div>
+
+                            <div class="profile-field">
+                                <label for="height">Height</label>
+                                <input class="profile-input" id="height" type="number" step="0.1" placeholder="Height">
+                            </div>
+
+                            <div class="profile-field">
+                                <label for="weight">Weight</label>
+                                <input class="profile-input" id="weight" type="number" step="0.1" placeholder="Weight">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="profile-section profile-section-skills">
+                        <h2>Skill Level</h2>
+                        <div class="skill-level-row">
+                            <button class="skill-chip" type="button">Beginner</button>
+                            <button class="skill-chip" type="button">Intermediate</button>
+                            <button class="skill-chip" type="button">Advanced</button>
+                        </div>
+                    </section>
+
+                    <p id="profileMessage" class="profile-message"></p>
+
+                    <div class="profile-actions">
+                        <button class="profile-save-button" type="button">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const usernameInput = document.getElementById("username");
+        const nameInput = document.getElementById("name");
+        const dobInput = document.getElementById("dob");
+        const heightInput = document.getElementById("height");
+        const weightInput = document.getElementById("weight");
+        const skillButtons = Array.from(document.querySelectorAll(".skill-chip"));
+        const saveButton = document.querySelector(".profile-save-button");
+        const messageEl = document.getElementById("profileMessage");
+
+        let selectedSkillLevel = "";
+
+        function setMessage(text, type = "") {
+            messageEl.textContent = text;
+            messageEl.className = `profile-message ${type}`.trim();
+        }
+
+        function setSelectedSkill(level) {
+            selectedSkillLevel = level || "";
+            skillButtons.forEach((button) => {
+                const isSelected = button.textContent === selectedSkillLevel;
+                button.classList.toggle("active", isSelected);
+            });
+        }
+
+        async function loadProfile() {
+            const username = localStorage.getItem("gymUser");
+
+            if (!username) {
+                setMessage("No logged-in user found. Please log in first.", "error");
+                saveButton.disabled = true;
+                return;
+            }
+
+            usernameInput.value = username;
+
+            try {
+                const response = await fetch(`../backend/profile.php?username=${encodeURIComponent(username)}`);
+                const data = await response.json();
+
+                if (data.status !== "success") {
+                    setMessage(data.message || "Unable to load profile.", "error");
+                    return;
+                }
+
+                const profile = data.profile;
+                nameInput.value = profile.name || "";
+                dobInput.value = profile.DoB || "";
+                heightInput.value = profile.height || "";
+                weightInput.value = profile.weight || "";
+                setSelectedSkill(profile.skill_level || "");
+                setMessage("");
+            } catch (error) {
+                console.error(error);
+                setMessage("An error occurred while loading the profile.", "error");
+            }
+        }
+
+        async function saveProfile() {
+            const username = usernameInput.value.trim();
+
+            if (!username) {
+                setMessage("Username is required.", "error");
+                return;
+            }
+
+            try {
+                const response = await fetch("../backend/profile.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username,
+                        name: nameInput.value.trim(),
+                        DoB: dobInput.value,
+                        height: heightInput.value,
+                        weight: weightInput.value,
+                        skill_level: selectedSkillLevel
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status !== "success") {
+                    setMessage(data.message || "Unable to save profile.", "error");
+                    return;
+                }
+
+                const profile = data.profile;
+                nameInput.value = profile.name || "";
+                dobInput.value = profile.DoB || "";
+                heightInput.value = profile.height || "";
+                weightInput.value = profile.weight || "";
+                setSelectedSkill(profile.skill_level || "");
+                setMessage(data.message || "Profile saved.", "success");
+            } catch (error) {
+                console.error(error);
+                setMessage("An error occurred while saving the profile.", "error");
+            }
+        }
+
+        skillButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                setSelectedSkill(button.textContent);
+            });
+        });
+
+        saveButton.addEventListener("click", saveProfile);
+        loadProfile();
+    </script>
+</body>
+</html>
