@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jim's Gym</title>
+    <title>Jim's Gym - Choose Workout</title>
     <link rel="stylesheet" href="Style.css">
 </head>
 <body>
@@ -19,9 +19,66 @@
         </ul>
     </nav>
 
-    <div style="padding: 20px;">
-        <h2>Welcome back, Champ.</h2>
-        <p>Your database is connected and ready for gains.</p>
+    <div class="main-content">
+        <h1 class="page-title">Choose Your Focus</h1>
+        
+        <div class="workout-grid">
+            <a href="../backend/create-workout.php?category=upper" class="workout-card">
+                <img src="images/upper.jpg" alt="Upper Body">
+                <div class="card-overlay">
+                    <h3>Upper Body</h3>
+                </div>
+            </a>
+
+            <a href="../backend/create-workout.php?category=lower" class="workout-card">
+                <img src="images/lower.jpg" alt="Lower Body">
+                <div class="card-overlay">
+                    <h3>Lower Body</h3>
+                </div>
+            </a>
+
+            <a href="../backend/create-workout.php?category=arms" class="workout-card">
+                <img src="images/arms.jpg" alt="Arms">
+                <div class="card-overlay">
+                    <h3>Arms</h3>
+                </div>
+            </a>
+
+            <a href="../backend/create-workout.php?category=chest" class="workout-card">
+                <img src="images/chest.jpg" alt="Chest">
+                <div class="card-overlay">
+                    <h3>Chest</h3>
+                </div>
+            </a>
+
+            <a href="../backend/create-workout.php?category=back" class="workout-card">
+                <img src="images/back.jpg" alt="Back">
+                <div class="card-overlay">
+                    <h3>Back</h3>
+                </div>
+            </a>
+
+            <a href="../backend/create-workout.php?category=cardio" class="workout-card">
+                <img src="images/cardio.jpg" alt="Cardio">
+                <div class="card-overlay">
+                    <h3>Cardio</h3>
+                </div>
+            </a>
+
+            <a href="../backend/create-workout.php?category=core" class="workout-card">
+                <img src="images/core.jpg" alt="Core">
+                <div class="card-overlay">
+                    <h3>Core</h3>
+                </div>
+            </a>
+
+            <a href="../backend/create-workout.php?category=legs" class="workout-card">
+                <img src="images/legs.jpg" alt="Legs">
+                <div class="card-overlay">
+                    <h3>Legs</h3>
+                </div>
+            </a>
+        </div>
     </div>
 
 </body>
