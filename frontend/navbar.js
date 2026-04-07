@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <ul class="nav-links">
           <li><a href="profile.html">My Profile</a></li>
-          <li><a href="start.html">Start a Workout</a></li>
+          <li><a href="workouts.html">Start a Workout</a></li>
           <li><a href="history.html">Previous Workouts</a></li>
           <button class="logout-link" onClick="logout()">Logout</button>
         </ul>
