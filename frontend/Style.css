@@ -192,10 +192,18 @@ body {
   border-radius: 50%;
   border: 4px solid #1f1f1f;
   background: linear-gradient(145deg, #fafafa, #dcdcdc);
+  overflow: hidden;
 }
 
 .profile-avatar-inline {
   flex: 0 0 auto;
+}
+
+.profile-avatar img {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-summary h2 {

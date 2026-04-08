@@ -22,7 +22,9 @@
 
             <div class="profile-grid">
                 <aside class="profile-summary">
-                    <div class="profile-avatar profile-avatar-inline" aria-label="Blank profile image placeholder"></div>
+                    <div class="profile-avatar profile-avatar-inline" aria-label="Profile image preview">
+                        <img id="profileImagePreview" alt="Profile preview">
+                    </div>
                     <h2>Profile Preview</h2>
                     <p>Set up your member details and training level here.</p>
                 </aside>
@@ -38,6 +40,11 @@
                         <div class="profile-field">
                             <label for="name">Name</label>
                             <input class="profile-input" id="name" type="text" placeholder="Enter your name">
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="img_url">Profile Image URL</label>
+                            <input class="profile-input" id="img_url" type="url" placeholder="Paste an image link">
                         </div>
 
                         <div class="profile-row">
@@ -77,116 +84,6 @@
         </section>
     </main>
 
-    <script>
-        const usernameInput = document.getElementById("username");
-        const nameInput = document.getElementById("name");
-        const dobInput = document.getElementById("dob");
-        const heightInput = document.getElementById("height");
-        const weightInput = document.getElementById("weight");
-        const skillButtons = Array.from(document.querySelectorAll(".skill-chip"));
-        const saveButton = document.querySelector(".profile-save-button");
-        const messageEl = document.getElementById("profileMessage");
-
-        let selectedSkillLevel = "";
-
-        function setMessage(text, type = "") {
-            messageEl.textContent = text;
-            messageEl.className = `profile-message ${type}`.trim();
-        }
-
-        function setSelectedSkill(level) {
-            selectedSkillLevel = level || "";
-            skillButtons.forEach((button) => {
-                const isSelected = button.textContent === selectedSkillLevel;
-                button.classList.toggle("active", isSelected);
-            });
-        }
-
-        async function loadProfile() {
-            const username = localStorage.getItem("gymUser");
-
-            if (!username) {
-                setMessage("No logged-in user found. Please log in first.", "error");
-                saveButton.disabled = true;
-                return;
-            }
-
-            usernameInput.value = username;
-
-            try {
-                const response = await fetch(`../backend/profile.php?username=${encodeURIComponent(username)}`);
-                const data = await response.json();
-
-                if (data.status !== "success") {
-                    setMessage(data.message || "Unable to load profile.", "error");
-                    return;
-                }
-
-                const profile = data.profile;
-                nameInput.value = profile.name || "";
-                dobInput.value = profile.DoB || "";
-                heightInput.value = profile.height || "";
-                weightInput.value = profile.weight || "";
-                setSelectedSkill(profile.skill_level || "");
-                setMessage("");
-            } catch (error) {
-                console.error(error);
-                setMessage("An error occurred while loading the profile.", "error");
-            }
-        }
-
-        async function saveProfile() {
-            const username = usernameInput.value.trim();
-
-            if (!username) {
-                setMessage("Username is required.", "error");
-                return;
-            }
-
-            try {
-                const response = await fetch("../backend/profile.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        username,
-                        name: nameInput.value.trim(),
-                        DoB: dobInput.value,
-                        height: heightInput.value,
-                        weight: weightInput.value,
-                        skill_level: selectedSkillLevel
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.status !== "success") {
-                    setMessage(data.message || "Unable to save profile.", "error");
-                    return;
-                }
-
-                const profile = data.profile;
-                nameInput.value = profile.name || "";
-                dobInput.value = profile.DoB || "";
-                heightInput.value = profile.height || "";
-                weightInput.value = profile.weight || "";
-                setSelectedSkill(profile.skill_level || "");
-                setMessage(data.message || "Profile saved.", "success");
-            } catch (error) {
-                console.error(error);
-                setMessage("An error occurred while saving the profile.", "error");
-            }
-        }
-
-        skillButtons.forEach((button) => {
-            button.addEventListener("click", () => {
-                setSelectedSkill(button.textContent);
-            });
-        });
-
-        saveButton.addEventListener("click", saveProfile);
-        loadProfile();
-    </script>
+    <script src="profile.js"></script>
 </body>
 </html>
