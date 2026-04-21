@@ -464,3 +464,60 @@ body {
     justify-content: stretch;
   }
 }
+
+/* Specific styles for the workout cards if not in Style.css */
+        .workout-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            color: #333;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #d32f2f; /* Matching a gym theme color */
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .set-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 10px;
+            border-bottom: 1px solid #f9f9f9;
+            transition: background 0.3s;
+        }
+        .set-row:last-child { border-bottom: none; }
+        
+        /* The logic for checking off sets */
+        .set-row.done {
+            background-color: #e8f5e9;
+            color: #888;
+            text-decoration: line-through;
+        }
+        .set-row input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+        .btn-finish {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            background: #d32f2f;
+            margin: auto;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-finish:hover { background: #b71c1c; }

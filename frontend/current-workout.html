@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jim's Gym - Current Workout</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        /* Lock the page to the screen height to prevent outer scrolling */
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; 
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .workout-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden; 
+            padding-bottom: 10px; /* Added padding to keep button clear of edge */
+        }
+
+        .page-title { margin: 5px 0; text-align: center; font-size: 1.3rem; }
+
+        /* 2x2 Grid Layout with UNIFORM GAPS */
+        #workout-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px; /* Applies to both columns and rows */
+            overflow-y: auto; 
+            flex-grow: 1;
+            padding: 5px;
+        }
+
+        /* Compact Card styling with LARGER FONTS */
+        .card { 
+            padding: 8px; 
+            background: white; 
+            border-radius: 6px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .card h3 { 
+            margin: 0; 
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card p { margin: 0; font-size: 0.85rem; }
+
+        /* Blue Circle Info Button */
+        .info-btn { 
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* Hidden by default */
+        .info-container { 
+            display: none; 
+            background: #f4f4f4; 
+            padding: 5px; 
+            margin: 2px 0; 
+            border-radius: 4px; 
+            font-size: 0.85rem; 
+        }
+        
+        /* Set rows left-aligned with LARGER FONTS */
+        .set-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start; 
+            gap: 6px; 
+            padding: 2px 0;
+        }
+        
+        .set-label { min-width: 45px; font-weight: bold; font-size: 0.9rem; } 
+        .set-text-display { font-size: 0.9rem; color: #333; font-style: italic; }
+
+        .btn-finish { 
+            width: 100%; 
+            cursor: pointer; 
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-shrink: 0; /* Ensures button stays visible */
+        }
+
+        @media (max-width: 768px) {
+            #workout-display { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<script src="navbar.js"></script>
+<nav id="navbar"></nav>
+
+<div class="main-content">
+    <div class="workout-container">
+        <h1 class="page-title">Today's Session</h1>
+        
+        <div id="workout-display">
+            <p>Loading your lifts...</p>
+        </div>
+
+        <button class="btn-finish" onclick="location.href='index.html'">Finish Workout</button>
+    </div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const workoutId = urlParams.get('id');
+    const display = document.getElementById('workout-display');
+
+    if (!workoutId) {
+        display.innerHTML = "<div class='card'><h3>Error</h3><p>No workout ID provided.</p></div>";
+    } else {
+        fetchWorkoutData(workoutId);
+    }
+
+    async function fetchWorkoutData(id) {
+        try {
+            const response = await fetch(`../backend/get-workout-details.php?id=${id}`);
+            const data = await response.json();
+
+            if (data.error) throw new Error(data.error);
+
+            if (data.length === 0) {
+                display.innerHTML = "<div class='card'><p>No exercises found.</p></div>";
+                return;
+            }
+
+            display.innerHTML = ''; 
+
+            data.forEach((lift, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                const infoId = `info-${index}`;
+                
+                let setsHTML = '';
+                lift.sets.forEach(set => {
+                    setsHTML += `
+                        <div class="set-row">
+                            <input type="checkbox" onchange="this.parentElement.classList.toggle('done')">
+                            <span class="set-label">Set ${set.set_number}</span>
+                            <span class="set-text-display">${set.set_text || ''}</span>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <h3>${lift.activity_name} 
+                        <button class="info-btn" onclick="toggleInfo('${infoId}')">i</button>
+                    </h3>
+                    <div id="${infoId}" class="info-container">
+                        <p>${lift.description || 'No description available.'}</p>
+                        ${lift.youtube_link ? `<a href="${lift.youtube_link}" target="_blank">Watch Tutorial</a>` : 'No video available.'}
+                    </div>
+                    <p><strong>Category:</strong> ${lift.main_muscle_group ? lift.main_muscle_group.toUpperCase() : 'N/A'}</p>
+                    <div class="sets-list">
+                        ${setsHTML}
+                    </div>
+                `;
+                display.appendChild(card);
+            });
+
+        } catch (err) {
+            console.error("Fetch Error:", err);
+            display.innerHTML = `<div class='card'><p>Error loading workout: ${err.message}</p></div>`;
+        }
+    }
+
+    function toggleInfo(id) {
+        const el = document.getElementById(id);
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+</script>
+
+</body>
+</html>
