@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jim's Gym - Current Workout</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        /* Tooltip and Layout CSS */
+        .info-container { display: none; background: #f4f4f4; padding: 10px; margin-top: 10px; border-radius: 5px; font-size: 0.9em; }
+        .info-btn { background: #007bff; color: white; border: none; padding: 2px 8px; border-radius: 50%; cursor: pointer; font-size: 0.8em; margin-left: 10px; }
+        .set-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .set-text-display { font-size: 0.85em; color: #555; font-style: italic; }
+
+        /* NEW: Grid Layout for Cards */
+        #workout-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */
+            gap: 20px; /* Space between cards */
+            margin-bottom: 30px; /* Space between grid and button */
+        }
+
+        /* Responsive: Stack cards on smaller screens */
+        @media (max-width: 768px) {
+            #workout-display {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script src="navbar.js"></script>
+<nav id="navbar"></nav>
+
+<div class="main-content">
+    <div class="workout-container">
+        <h1 class="page-title">Today's Session</h1>
+        
+        <div id="workout-display">
+            <p>Loading your lifts...</p>
+        </div>
+
+        <button class="btn-finish" onclick="location.href='index.html'">Finish Workout</button>
+    </div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const workoutId = urlParams.get('id');
+    const display = document.getElementById('workout-display');
+
+    if (!workoutId) {
+        display.innerHTML = "<div class='card'><h3>Error</h3><p>No workout ID provided.</p></div>";
+    } else {
+        fetchWorkoutData(workoutId);
+    }
+
+    async function fetchWorkoutData(id) {
+        try {
+            const response = await fetch(`../backend/get-workout-details.php?id=${id}`);
+            const data = await response.json();
+
+            if (data.length === 0) {
+                display.innerHTML = "<div class='card'><p>No exercises found.</p></div>";
+                return;
+            }
+
+            display.innerHTML = ''; 
+
+            data.forEach((lift, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                const infoId = `info-${index}`;
+                
+                let setsHTML = '';
+                for (let i = 1; i <= lift.num_sets; i++) {
+                    setsHTML += `
+                        <div class="set-row">
+                            <input type="checkbox" onchange="this.parentElement.classList.toggle('done')">
+                            <span>Set ${i}</span>
+                            <span class="set-text-display">${lift.set_text || ''}</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <h3>${lift.activity_name} 
+                        <button class="info-btn" onclick="toggleInfo('${infoId}')">i</button>
+                    </h3>
+                    <div id="${infoId}" class="info-container">
+                        <p>${lift.description || 'No description available.'}</p>
+                        ${lift.youtube_link ? `<a href="${lift.youtube_link}" target="_blank">Watch Tutorial</a>` : 'No video available.'}
+                    </div>
+                    <p><strong>Category:</strong> ${lift.main_muscle_group ? lift.main_muscle_group.toUpperCase() : 'N/A'}</p>
+                    <div class="sets-list">
+                        ${setsHTML}
+                    </div>
+                `;
+                display.appendChild(card);
+            });
+
+        } catch (err) {
+            console.error("Fetch Error:", err);
+            display.innerHTML = `<div class='card'><p>Error loading workout.</p></div>`;
+        }
+    }
+
+    function toggleInfo(id) {
+        const el = document.getElementById(id);
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+</script>
+
+</body>
+</html>
