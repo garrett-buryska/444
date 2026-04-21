@@ -510,9 +510,9 @@ body {
             display: block;
             width: 100%;
             max-width: 300px;
-            margin: 30px auto;
             padding: 15px;
             background: #d32f2f;
+            margin: auto;
             color: white;
             border: none;
             border-radius: 5px;

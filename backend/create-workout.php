@@ -1,47 +1,76 @@
 <?php
-// Ensure no whitespace/HTML before this tag to avoid redirect errors
-
 try {
-    // 1. Updated Database Connection Path
-    // '../' moves up one level out of 'frontend' and into the root, 
-    // then 'backend/' enters the backend folder.
-    $db = new PDO('sqlite:./gym_app.db');
+    $db = new PDO('sqlite:gym_app.db');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // 2. Get the Category from your "Customize Workout" form
-    $selectedCategory = $_GET['category'] ?? 'chest'; // Default to 'chest' if not provided
+    // Get the category and ensure it matches the keys in our switch statement
+    $selectedCategory = strtolower(str_replace(' ', '-', $_GET['category'] ?? 'chest'));
 
-    // 3. Create the Workout Header
+    // Define Training Profiles
+    switch ($selectedCategory) {
+        case 'legs':
+        case 'lower-body':
+            $profile = ['minSets' => 4, 'maxSets' => 5, 'startReps' => 10, 'decrement' => 1];
+            break;
+        case 'cardio':
+            $profile = ['minSets' => 3, 'maxSets' => 4, 'startReps' => 20, 'decrement' => 5];
+            break;
+        case 'core':
+            $profile = ['minSets' => 3, 'maxSets' => 4, 'startReps' => 15, 'decrement' => 2];
+            break;
+        case 'chest':
+        case 'back':
+        case 'arms':
+        case 'upper-body':
+        default:
+            // Standard Hypertrophy
+            $profile = ['minSets' => 3, 'maxSets' => 4, 'startReps' => 12, 'decrement' => 2];
+            break;
+    }
+
+    // 1. Create Workout Header
     $stmt = $db->prepare("INSERT INTO Workout (time_stamp, workout_type) VALUES (CURRENT_TIMESTAMP, ?)");
     $stmt->execute([$selectedCategory]);
-    
-    // Capture the ID for the redirect
     $workoutId = $db->lastInsertId();
 
-    // 4. Select 4 Random Lifts from the Chosen Category
+    // 2. Select 4 Random Lifts
+    // Note: Ensure your 'Activities' table has these categories spelled exactly like the cases above
     $query = "SELECT activity_name FROM Activities WHERE main_muscle_group = ? ORDER BY RANDOM() LIMIT 4";
     $stmt = $db->prepare($query);
     $stmt->execute([$selectedCategory]);
     $lifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Safety check: ensure at least 4 exercises exist in this category
     if (count($lifts) >= 4) {
-        
-        // 5. Insert Lifts and Sets (2 or 3) into the junction table
-        $insertSetStmt = $db->prepare("INSERT INTO Lift (workoutID, activity_name, num_sets) VALUES (?, ?, ?)");
+        $insertLiftStmt = $db->prepare("INSERT INTO Lift (workoutID, activity_name, num_sets) VALUES (?, ?, ?)");
+        $insertSetStmt = $db->prepare("INSERT INTO Sets (liftID, set_number, set_text) VALUES (?, ?, ?)");
 
         foreach ($lifts as $lift) {
-            // Every lift gets 2 or 3 sets
-            $numSets = rand(2, 3);
-            $insertSetStmt->execute([$workoutId, $lift['activity_name'], $numSets]);
+            $numSets = rand($profile['minSets'], $profile['maxSets']);
+            
+            $insertLiftStmt->execute([$workoutId, $lift['activity_name'], $numSets]);
+            $liftId = $db->lastInsertId();
+
+            for ($i = 1; $i <= $numSets; $i++) {
+                // Calculation: Start at profile base, subtract based on decrement
+                $currentReps = $profile['startReps'] - (($i - 1) * $profile['decrement']);
+                $currentReps = max(2, $currentReps); // Never go below 2 reps
+                
+                // Set text logic: Default to "X Reps", but change to "Until Failure" on last set 50% of the time
+                if ($i == $numSets && rand(0, 1) == 1) {
+                    $text = "Until Failure";
+                } else {
+                    $text = "{$currentReps} Reps";
+                }
+
+                $insertSetStmt->execute([$liftId, $i, $text]);
+            }
         }
 
-        // 6. Redirect to current-workout.html with the ID
         header("Location: ../frontend/current-workout.html?id=" . $workoutId);
         exit();
 
     } else {
-        echo "Error: Found only " . count($lifts) . " exercises for '$selectedCategory'. You need at least 4.";
+        echo "Error: Need at least 4 exercises in category '$selectedCategory'.";
     }
 
 } catch (PDOException $e) {
