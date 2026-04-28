@@ -28,6 +28,7 @@ $username = $data->username;
 $password = $data->password; // Note: For better security, consider hashing passwords using password_hash()
 $name = $data->name;
 $img_url = isset($data->img_url) ? $data->img_url : null;
+$dob = isset($data->dob) ? $data->dob : null;
 $weight = isset($data->weight) ? $data->weight : null;
 $height = isset($data->height) ? $data->height : null;
 $skill = isset($data->skill) ? $data->skill : null;
@@ -40,8 +41,8 @@ try {
 
     // Prepare the SQL statement to prevent SQL injection
     $stmt = $pdo->prepare("
-        INSERT INTO User (username, password, name, img_url, weight, height, skill_level) 
-        VALUES (:username, :password, :name, :img_url, :weight, :height, :skill)
+        INSERT INTO User (username, password, name, img_url, DoB, weight, height, skill_level) 
+        VALUES (:username, :password, :name, :img_url, :dob, :weight, :height, :skill)
     ");
 
     // Execute the query
@@ -52,7 +53,8 @@ try {
         ':img_url' => $img_url,
         ':weight' => $weight,
         ':height' => $height,
-        ':skill' => $skill
+        ':skill' => $skill,
+        ':dob' => $dob
     ]);
 
     // Automatically log the user in by saving the username to session
