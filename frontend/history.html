@@ -21,11 +21,10 @@
       document.addEventListener("DOMContentLoaded", () => {
         const workoutList = document.getElementById("workoutList");
 
-        // Fetch data from the PHP backend
         fetch(`../backend/get_history.php`, { credentials: "include" })
           .then((response) => response.json())
           .then((data) => {
-            workoutList.innerHTML = ""; // Clear loading message
+            workoutList.innerHTML = "";
 
             if (data.status === "success") {
               if (data.data.length === 0) {
@@ -34,7 +33,6 @@
                 return;
               }
 
-              // Create a card for each workout
               data.data.forEach((workout) => {
                 const date = new Date(workout.time_stamp).toLocaleString();
                 const type = workout.workout_type
@@ -47,7 +45,7 @@
                 card.style.cursor = "pointer";
                 card.onclick = () =>
                   (window.location.href = `current-workout.html?id=${workout.workout_Id}`);
-                card.innerHTML = `
+                card.innerHTML = ` 
                                 <div class="history-header">
                                     <div class="history-type">${type}</div>
                                     <div class="history-date">${date}</div>

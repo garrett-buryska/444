@@ -24,7 +24,7 @@ async function checkAuth() {
     if (data.status !== "success" && !isAuthPage) {
       window.location.href = "login.html";
     } else if (data.status === "success" && isAuthPage) {
-      window.location.href = "workouts.html"; // Redirect to dashboard if they are already logged in
+      window.location.href = "workouts.html";
     }
   } catch (error) {
     console.error("Error checking authentication:", error);

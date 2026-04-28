@@ -86,7 +86,6 @@
       const imgUrlInput = document.getElementById("img_url");
       const imgPreview = document.getElementById("imgPreview");
 
-      // Listen for changes in the image URL input
       imgUrlInput.addEventListener("input", function () {
         if (this.value.trim() !== "") {
           imgPreview.src = this.value;
@@ -95,7 +94,6 @@
           imgPreview.style.display = "none";
         }
       });
-      // Hide the image if the URL fails to load
       imgPreview.addEventListener("error", function () {
         imgPreview.style.display = "none";
       });
@@ -103,19 +101,18 @@
       document
         .getElementById("createAccountForm")
         .addEventListener("submit", function (e) {
-          e.preventDefault(); // Prevent the default form submission
+          e.preventDefault();
 
-          const user = document.getElementById("username").value;
-          const pass = document.getElementById("password").value;
-          const name = document.getElementById("name").value;
-          const imgUrl = document.getElementById("img_url").value;
-          const dob = document.getElementById("dob").value;
-          const weight = parseFloat(document.getElementById("weight").value);
-          const height = parseFloat(document.getElementById("height").value);
-          const skill = document.getElementById("skill").value;
+          const usernameInput = document.getElementById("username").value;
+          const passwordInput = document.getElementById("password").value;
+          const nameInput = document.getElementById("name").value;
+          const imgUrlVal = document.getElementById("img_url").value;
+          const dobVal = document.getElementById("dob").value;
+          const weightVal = parseFloat(document.getElementById("weight").value);
+          const heightVal = parseFloat(document.getElementById("height").value);
+          const skillInput = document.getElementById("skill").value;
           const messageDiv = document.getElementById("message");
 
-          // Send data to the backend
           fetch("../backend/create-account.php", {
             method: "POST",
             headers: {
@@ -123,14 +120,14 @@
             },
             credentials: "include",
             body: JSON.stringify({
-              username: user,
-              password: pass,
-              name: name,
-              img_url: imgUrl,
-              dob: dob,
-              weight: weight,
-              height: height,
-              skill: skill,
+              username: usernameInput,
+              password: passwordInput,
+              name: nameInput,
+              img_url: imgUrlVal,
+              dob: dobVal,
+              weight: weightVal,
+              height: heightVal,
+              skill: skillInput,
             }),
           })
             .then((response) => response.json())

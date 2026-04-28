@@ -42,6 +42,7 @@ async function loadProfile() {
     const response = await fetch("../backend/profile.php", {
       credentials: "include",
     });
+    console.log(response);
     const data = await response.json();
 
     if (data.status !== "success") {

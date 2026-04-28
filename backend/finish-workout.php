@@ -1,12 +1,4 @@
 <?php
-// backend/finish-workout.php
-
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-header("Access-Control-Allow-Origin: $origin");
-header("Access-Control-Allow-Credentials: true");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
-
 $data = json_decode(file_get_contents("php://input"));
 
 if (!isset($data->workoutId) || !isset($data->sets) || !is_array($data->sets)) {
@@ -25,14 +17,12 @@ try {
 
     $pdo->beginTransaction();
 
-    // Prepare statement for updating sets
     $updateSetStmt = $pdo->prepare("
         UPDATE Sets 
         SET completed = :completed 
         WHERE liftID = :liftID AND set_number = :set_number
     ");
 
-    // Update each set's completion status
     foreach ($sets as $set) {
         if (isset($set->liftID) && isset($set->set_number) && isset($set->completed)) {
             $updateSetStmt->execute([
@@ -43,7 +33,6 @@ try {
         }
     }
 
-    // Get all liftIDs for this workout to update their overall status
     $getLiftsStmt = $pdo->prepare("SELECT liftID FROM Lift WHERE workoutID = :workoutID");
     $getLiftsStmt->execute([':workoutID' => $workoutId]);
     $liftIDs = $getLiftsStmt->fetchAll(PDO::FETCH_COLUMN);
@@ -55,7 +44,6 @@ try {
         WHERE liftID = :liftID AND (completed = 0 OR completed IS NULL)
     ");
 
-    // Update each lift's completion status based on its sets
     foreach ($liftIDs as $liftID) {
         $checkSetsStmt->execute([':liftID' => $liftID]);
         $incompleteSetsCount = $checkSetsStmt->fetchColumn();
@@ -72,10 +60,5 @@ try {
     echo json_encode(["status" => "success", "message" => "Workout finished successfully."]);
 
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    http_response_code(500);
-    echo json_encode(["status" => "error", "message" => "Database error: " . $e->getMessage()]);
+    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
-?>
