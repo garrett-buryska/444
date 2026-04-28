@@ -29,7 +29,7 @@
         max-width: 1200px;
         margin: 0 auto;
         overflow: hidden;
-        padding-bottom: 10px; /* Added padding to keep button clear of edge */
+        padding-bottom: 10px;
       }
 
       .page-title {
@@ -38,17 +38,15 @@
         font-size: 1.3rem;
       }
 
-      /* 2x2 Grid Layout with UNIFORM GAPS */
       #workout-display {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px; /* Applies to both columns and rows */
+        gap: 20px;
         overflow-y: auto;
         flex-grow: 1;
         padding: 5px;
       }
 
-      /* Compact Card styling with LARGER FONTS */
       .card {
         padding: 8px;
         background: white;
@@ -73,7 +71,6 @@
         font-size: 0.85rem;
       }
 
-      /* Blue Circle Info Button */
       .info-btn {
         background-color: #007bff;
         color: white;
@@ -90,7 +87,6 @@
         flex-shrink: 0;
       }
 
-      /* Hidden by default */
       .info-container {
         display: none;
         background: #f4f4f4;
@@ -100,7 +96,6 @@
         font-size: 0.85rem;
       }
 
-      /* Set rows left-aligned with LARGER FONTS */
       .set-row {
         display: flex;
         align-items: center;
@@ -129,7 +124,7 @@
         border-radius: 8px;
         font-size: 1.2rem;
         font-weight: bold;
-        flex-shrink: 0; /* Ensures button stays visible */
+        flex-shrink: 0;
       }
 
       @media (max-width: 768px) {
@@ -171,23 +166,13 @@
 
       async function fetchWorkoutData(id) {
         try {
-          const response = await fetch(
-            `../backend/get-workout-details.php?id=${id}`,
-          );
+          const response = await fetch(`../backend/get-workout-details.php?id=${id}`);
           const data = await response.json();
 
           if (data.error) throw new Error(data.error);
 
           if (data.length === 0) {
-            display.innerHTML =
-              "<div class='card'><p>No exercises found.</p></div>";
-            return;
-          }
-
-          if (typeof data[0].liftID === "undefined") {
-            display.innerHTML =
-              "<div class='card'><p>Error: Data from server is malformed (missing liftID). Cannot track progress.</p></div>";
-            document.querySelector(".btn-finish").disabled = true;
+            display.innerHTML = "<div class='card'><p>No exercises found.</p></div>";
             return;
           }
 
@@ -202,28 +187,35 @@
             lift.sets.forEach((set) => {
               const isChecked = set.completed ? "checked" : "";
               const doneClass = set.completed ? "done" : "";
+              
+              // Display logic: "10 Reps at 50 lbs"
+              let displayText = set.set_text || "";
+              if (set.weight && set.weight > 0) {
+                  displayText += ` at ${set.weight} lbs`;
+              }
+
               setsHTML += `
-                        <div class="set-row ${doneClass}">
-                            <input type="checkbox" data-lift-id="${lift.liftID}" data-set-number="${set.set_number}" onchange="this.parentElement.classList.toggle('done')" ${isChecked}>
-                            <span class="set-label">Set ${set.set_number}</span>
-                            <span class="set-text-display">${set.set_text || ""}</span>
-                        </div>
-                    `;
+                <div class="set-row ${doneClass}">
+                    <input type="checkbox" data-lift-id="${lift.liftID}" data-set-number="${set.set_number}" onchange="this.parentElement.classList.toggle('done')" ${isChecked}>
+                    <span class="set-label">Set ${set.set_number}</span>
+                    <span class="set-text-display">${displayText}</span>
+                </div>
+              `;
             });
 
             card.innerHTML = `
-                    <h3>${lift.activity_name} 
-                        <button class="info-btn" onclick="toggleInfo('${infoId}')">i</button>
-                    </h3>
-                    <div id="${infoId}" class="info-container">
-                        <p>${lift.description || "No description available."}</p>
-                        ${lift.youtube_link ? `<a href="${lift.youtube_link}" target="_blank">Watch Tutorial</a>` : "No video available."}
-                    </div>
-                    <p><strong>Category:</strong> ${lift.main_muscle_group ? lift.main_muscle_group.toUpperCase() : "N/A"}</p>
-                    <div class="sets-list">
-                        ${setsHTML}
-                    </div>
-                `;
+                <h3>${lift.activity_name} 
+                    <button class="info-btn" onclick="toggleInfo('${infoId}')">i</button>
+                </h3>
+                <div id="${infoId}" class="info-container">
+                    <p>${lift.description || "No description available."}</p>
+                    ${lift.youtube_link ? `<a href="${lift.youtube_link}" target="_blank">Watch Tutorial</a>` : "No video available."}
+                </div>
+                <p><strong>Category:</strong> ${lift.main_muscle_group ? lift.main_muscle_group.toUpperCase() : "N/A"}</p>
+                <div class="sets-list">
+                    ${setsHTML}
+                </div>
+            `;
             display.appendChild(card);
           });
         } catch (err) {
@@ -242,9 +234,7 @@
         button.textContent = "Finishing...";
 
         const setsPayload = [];
-        const checkboxes = document.querySelectorAll(
-          '#workout-display input[type="checkbox"]',
-        );
+        const checkboxes = document.querySelectorAll('#workout-display input[type="checkbox"]');
 
         checkboxes.forEach((cb) => {
           setsPayload.push({
@@ -255,7 +245,7 @@
         });
 
         if (!workoutId) {
-          alert("Workout ID is missing. Cannot finish workout.");
+          alert("Workout ID is missing.");
           button.disabled = false;
           button.textContent = "Finish Workout";
           return;
@@ -264,26 +254,19 @@
         try {
           const response = await fetch("../backend/finish-workout.php", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              workoutId: workoutId,
-              sets: setsPayload,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workoutId: workoutId, sets: setsPayload }),
           });
-
           const result = await response.json();
-
           if (result.status === "success") {
             window.location.href = "workouts.html";
           } else {
-            alert("Error finishing workout: " + result.message);
+            alert("Error: " + result.message);
             button.disabled = false;
             button.textContent = "Finish Workout";
           }
         } catch (error) {
-          alert("An error occurred while finishing the workout.");
+          alert("An error occurred.");
           button.disabled = false;
           button.textContent = "Finish Workout";
         }

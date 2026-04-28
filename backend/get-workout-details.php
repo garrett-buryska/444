@@ -12,6 +12,7 @@ try {
         exit;
     }
 
+    // 1. Added S.weight to the SELECT statement
     $query = "SELECT 
                 L.liftID, 
                 L.activity_name, 
@@ -21,7 +22,8 @@ try {
                 A.main_muscle_group, 
                 S.set_number, 
                 S.set_text,
-                S.completed
+                S.completed,
+                S.weight
               FROM Lift L
               JOIN Activities A ON L.activity_name = A.activity_name
               JOIN Sets S ON L.liftID = S.liftID
@@ -48,10 +50,12 @@ try {
             ];
         }
 
+        // 2. Added 'weight' to the array
         $workoutData[$liftId]['sets'][] = [
             'set_number' => $row['set_number'],
             'set_text' => $row['set_text'],
-            'completed' => (bool) $row['completed']
+            'completed' => (bool) $row['completed'],
+            'weight' => (float) $row['weight'] // Cast to float for consistency
         ];
     }
 
