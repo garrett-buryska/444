@@ -24,7 +24,7 @@ async function checkAuth() {
     if (data.status !== "success" && !isAuthPage) {
       window.location.href = "login.html";
     } else if (data.status === "success" && isAuthPage) {
-      window.location.href = "workouts.html"; // Redirect to dashboard if they are already logged in
+      window.location.href = "workouts.html";
     }
   } catch (error) {
     console.error("Error checking authentication:", error);
@@ -43,10 +43,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <a href="#" class="nav-brand">Jim's Gym</a>
 
         <ul class="nav-links">
-          <li><a href="profile.html">My Profile</a></li>
-          <li><a href="workouts.html">Start a Workout</a></li>
-          <li><a href="history.html">Previous Workouts</a></li>
-          <button class="logout-link" onClick="logout()">Logout</button>
+            <li><a href="profile.html">My Profile</a></li>
+            <li><a href="workouts.html">Start a Workout</a></li>
+            <li><a href="history.html">Previous Workouts</a></li>
+            <li><a href="activities-max.html">Set Maxes</a></li>
+            <button class="logout-link" onClick="logout()">Logout</button>
         </ul>
     </div>
     `;
