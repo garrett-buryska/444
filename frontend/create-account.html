@@ -41,6 +41,8 @@
           />
           <img id="imgPreview" class="auth-image-preview" alt="Image Preview" />
 
+          <input class="auth-input" id="dob" type="date" required />
+
           <div class="auth-row">
             <input
               type="number"
@@ -107,6 +109,7 @@
           const pass = document.getElementById("password").value;
           const name = document.getElementById("name").value;
           const imgUrl = document.getElementById("img_url").value;
+          const dob = document.getElementById("dob").value;
           const weight = parseFloat(document.getElementById("weight").value);
           const height = parseFloat(document.getElementById("height").value);
           const skill = document.getElementById("skill").value;
@@ -124,6 +127,7 @@
               password: pass,
               name: name,
               img_url: imgUrl,
+              dob: dob,
               weight: weight,
               height: height,
               skill: skill,
