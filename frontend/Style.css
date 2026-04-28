@@ -514,7 +514,6 @@ body {
   }
 }
 
-/* Specific styles for the workout cards if not in Style.css */
 .workout-container {
   max-width: 800px;
   margin: 20px auto;
@@ -530,7 +529,7 @@ body {
 }
 .card h3 {
   margin-top: 0;
-  color: #d32f2f; /* Matching a gym theme color */
+  color: #d32f2f;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
 }
@@ -575,7 +574,6 @@ body {
   background: #b71c1c;
 }
 
-/* Authentication Pages (Login / Signup) */
 .auth-wrapper {
   display: flex;
   justify-content: center;
@@ -584,7 +582,6 @@ body {
   padding: 20px;
 }
 
-/* If navbar exists, adjust wrapper height */
 nav + .auth-wrapper {
   min-height: calc(100vh - 70px);
 }
@@ -690,7 +687,6 @@ nav + .auth-wrapper {
   margin-top: 10px;
 }
 
-/* History Page */
 .history-container {
   padding: 40px 20px;
   max-width: 800px;

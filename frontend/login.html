@@ -42,13 +42,12 @@
       document
         .getElementById("loginForm")
         .addEventListener("submit", function (e) {
-          e.preventDefault(); // Prevent the default form submission (page reload)
+          e.preventDefault();
 
-          const user = document.getElementById("username").value;
-          const pass = document.getElementById("password").value;
+          const usernameInput = document.getElementById("username").value;
+          const passwordInput = document.getElementById("password").value;
           const messageDiv = document.getElementById("message");
 
-          // Send data to the PHP backend
           fetch("../backend/login.php", {
             method: "POST",
             headers: {
@@ -56,14 +55,13 @@
             },
             credentials: "include",
             body: JSON.stringify({
-              username: user,
-              password: pass,
+              username: usernameInput,
+              password: passwordInput,
             }),
           })
             .then((response) => response.json())
             .then((data) => {
               if (data.status === "success") {
-                // Redirect to the new dashboard page
                 window.location.href = "workouts.html";
               } else {
                 messageDiv.className = "auth-message error";
