@@ -1,13 +1,8 @@
 <?php
-header('Content-Type: application/json');
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-header("Access-Control-Allow-Origin: $origin");
-header("Access-Control-Allow-Credentials: true");
-
 try {
     $dbPath = __DIR__ . '/gym_app.db';
-    $db = new PDO('sqlite:' . $dbPath);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO('sqlite:' . $dbPath);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $workoutId = $_GET['id'] ?? null;
 
@@ -17,7 +12,6 @@ try {
         exit;
     }
 
-    // Join Lift, Activities, and Sets to get everything in one query
     $query = "SELECT 
                 L.liftID, 
                 L.activity_name, 
@@ -34,16 +28,14 @@ try {
               WHERE L.workoutID = ?
               ORDER BY L.liftID, S.set_number";
 
-    $stmt = $db->prepare($query);
+    $stmt = $pdo->prepare($query);
     $stmt->execute([$workoutId]);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Group the results into a clean structure for the frontend
     $workoutData = [];
     foreach ($results as $row) {
         $liftId = $row['liftID'];
 
-        // If this lift isn't in our array yet, initialize it
         if (!isset($workoutData[$liftId])) {
             $workoutData[$liftId] = [
                 'liftID' => $liftId,
@@ -52,11 +44,10 @@ try {
                 'description' => $row['description'],
                 'youtube_link' => $row['youtube_link'],
                 'main_muscle_group' => $row['main_muscle_group'],
-                'sets' => [] // This will hold the set details
+                'sets' => []
             ];
         }
 
-        // Add the set info to this lift
         $workoutData[$liftId]['sets'][] = [
             'set_number' => $row['set_number'],
             'set_text' => $row['set_text'],
@@ -64,7 +55,6 @@ try {
         ];
     }
 
-    // Re-index array to be a clean list
     echo json_encode(array_values($workoutData));
 
 } catch (Exception $e) {

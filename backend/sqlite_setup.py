@@ -212,10 +212,8 @@ def init_db():
             f"{WORKOUT_CATEGORIES}. Invalid values: {invalid_secondary_categories}"
         )
 
-    # Enable Foreign Key support in SQLite
     cursor.execute("PRAGMA foreign_keys = ON;")
 
-    # 1. User Table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS User (
             username TEXT PRIMARY KEY,
@@ -232,7 +230,6 @@ def init_db():
         )
     """)
 
-    # 2. Activities Table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Activities (
             activity_name TEXT PRIMARY KEY,
@@ -256,7 +253,6 @@ def init_db():
         )
     """)
 
-    # 3. Workout Table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Workout (
             workout_Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -267,7 +263,6 @@ def init_db():
         )
     """)
 
-    # 4. Lift Table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Lift (
             liftID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -280,7 +275,6 @@ def init_db():
         )
     """)
 
-    # 5. Sets Table (Composite Primary Key: liftID + set_number)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Sets (
             liftID INTEGER,
@@ -295,17 +289,14 @@ def init_db():
 
     ensure_activities_secondary_constraint(conn, cursor)
 
-    # --- Add Seed Data ---
-
-    # Add test users without overwriting accounts created through the app.
     cursor.execute("""
         INSERT OR IGNORE INTO User (username, password, name, skill_level, bench_max, squat_max, deadlift_max)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?) 
     """, ("gym_bro_99", "ironlifter1", "Chad Smith", "Advanced", 225, 315, 405))
 
     cursor.execute("""
         INSERT OR IGNORE INTO User (username, password, name, weight, height, skill_level, bench_max, squat_max, deadlift_max)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
     """, ("demo_lifter", "demo123", "Demo Lifter", 185, 70, "Intermediate", 205, 275, 335))
 
     cursor.executemany("""
@@ -322,7 +313,6 @@ def init_db():
 
     seed_username = "gym_bro_99"
 
-    # Keep this seed data repeatable when sqlite_setup.py is run more than once.
     cursor.execute("""
         DELETE FROM Sets
         WHERE liftID IN (
@@ -367,7 +357,6 @@ def init_db():
     conn.commit()
     print(f"Gym Database initialized with seed workouts at {DB_PATH}.\n")
 
-    # Verification Print
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
     print("Created Tables:", [t[0] for t in tables])
