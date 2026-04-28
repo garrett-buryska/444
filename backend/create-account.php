@@ -6,12 +6,14 @@ $data = json_decode(file_get_contents("php://input"));
 if (
     !isset($data->username) ||
     !isset($data->password) ||
-    !isset($data->name)
+    !isset($data->name) ||
+    !isset($data->dob)
 ) {
     echo json_encode(["status" => "error", "message" => "Missing required fields."]);
     exit;
 }
 
+// form stuff
 $username = $data->username;
 $password = $data->password;
 $name = $data->name;
@@ -22,11 +24,10 @@ $height = $data->height ?? null;
 $skillLevel = $data->skill ?? null;
 
 try {
-    $dbPath = __DIR__ . '/gym_app.db';
-    $pdo = new PDO("sqlite:" . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO("sqlite:gym_app.db");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $stmt = $pdo->prepare("
+    $stmt = $db->prepare("
         INSERT INTO User (username, password, name, img_url, DoB, weight, height, skill_level) 
         VALUES (:username, :password, :name, :imgUrl, :dob, :weight, :height, :skillLevel)
     ");

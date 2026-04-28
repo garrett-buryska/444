@@ -1,19 +1,18 @@
 <?php
 session_start();
 
-$username = $_SESSION['username'] ?? null;
+$username = $_SESSION['username'] ?? "";
 
-if (!$username) {
+if ($username === "") {
     echo json_encode(["status" => "error", "message" => "Username is required."]);
     exit;
 }
 
 try {
-    $dbPath = __DIR__ . '/gym_app.db';
-    $pdo = new PDO("sqlite:" . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO("sqlite:gym_app.db");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $stmt = $pdo->prepare("
+    $stmt = $db->prepare("
         SELECT w.workout_Id, w.workout_type, w.time_stamp,
                GROUP_CONCAT(l.activity_name, ', ') as exercises
         FROM Workout w
@@ -22,6 +21,7 @@ try {
         GROUP BY w.workout_Id
         ORDER BY w.time_stamp DESC
     ");
+
     $stmt->execute([':username' => $username]);
     $workouts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

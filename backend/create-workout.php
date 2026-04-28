@@ -1,6 +1,11 @@
 <?php
 session_start();
-$username = $_SESSION['username'] ?? 'Guest';
+$username = $_SESSION['username'] ?? "";
+
+if (!$username) {
+    echo json_encode(["status" => "error", "message" => "Username is required."]);
+    exit;
+}
 
 try {
     $db = new PDO('sqlite:gym_app.db');
@@ -28,14 +33,14 @@ try {
 
     if (count($lifts) >= 4) {
         $insertLiftStmt = $db->prepare("INSERT INTO Lift (workoutID, activity_name, num_sets) VALUES (?, ?, ?)");
-        
+
         // Updated INSERT statement to include 'weight'
         $insertSetStmt = $db->prepare("INSERT INTO Sets (liftID, set_number, set_text, reps, weight) VALUES (?, ?, ?, ?, ?)");
 
         foreach ($lifts as $lift) {
             $actName = $lift['activity_name'];
             $max = $maxValues[$actName] ?? 0;
-            
+
             $avgSets = (int) $lift['average_sets'];
             $numSets = rand(max(1, $avgSets - 1), $avgSets + 1);
 
@@ -65,11 +70,11 @@ try {
 
                         // Cap intensity at 95%
                         $intensity = min($intensity, 0.95);
-                        
+
                         // Calculate weight and round to nearest 5
                         $rawWeight = $max * $intensity;
                         $weight = round($rawWeight / 5) * 5;
-                        
+
                     } else {
                         $weight = 0; // Fallback if no max is set
                     }
@@ -81,7 +86,7 @@ try {
                 } else {
                     $value = (int) $lift['average_reps'];
                     $text = $value . " " . ucfirst($type);
-                    $weight = 0; 
+                    $weight = 0;
                 }
 
                 $insertSetStmt->execute([$liftId, $i, $text, $value, $weight]);
@@ -97,4 +102,3 @@ try {
 } catch (PDOException $e) {
     echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
-?>
