@@ -51,10 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
         </label>
 
         <ul class="nav-links">
-          <li><a href="profile.html">My Profile</a></li>
-          <li><a href="workouts.html">Start a Workout</a></li>
-          <li><a href="history.html">Previous Workouts</a></li>
-          <button class="logout-link" onClick="logout()">Logout</button>
+            <li><a href="profile.html">My Profile</a></li>
+            <li><a href="workouts.html">Start a Workout</a></li>
+            <li><a href="history.html">Previous Workouts</a></li>
+            <li><a href="activities-max.html">Set Maxes</a></li>
+            <button class="logout-link" onClick="logout()">Logout</button>
         </ul>
     </div>
     `;

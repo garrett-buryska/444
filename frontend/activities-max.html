@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Maxes</title>
+    <link rel="stylesheet" href="Style.css" />
+    <style>
+        /* Center the main container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            gap: 20px;
+            max-width: 900px;
+            margin: 20px auto; /* Centers the grid on the page */
+            padding: 10px;
+        }
+
+        /* The item row: flex allows us to align Name left, Input right */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #ddd; /* Creates a "connected" look */
+        }
+
+        /* Ensure input boxes align vertically */
+        .input-group {
+            display: flex;
+            align-items: center;
+            width: 140px; /* Fixed width ensures inputs line up */
+            justify-content: flex-end;
+        }
+
+        input { width: 60px; padding: 5px; text-align: center; }
+        .type-label { margin-left: 8px; font-weight: bold; color: #555; font-size: 0.9em; width: 60px; }
+        
+        h2 { text-align: center; }
+
+        /* Responsive: Stack to 1 column on mobile */
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <script src="navbar.js"></script>
+    <nav id="navbar"></nav>
+
+    <h2>Enter Your Maxes</h2>
+    <div class="grid-container" id="activity-body">
+        </div>
+
+    <script>
+        window.onload = function() {
+            fetch('../backend/get-activities.php')
+                .then(response => response.json())
+                .then(activities => {
+                    const container = document.getElementById('activity-body');
+                    
+                    activities.forEach(act => {
+                        const label = (act.set_type === 'reps') ? 'lbs' : act.set_type;
+                        const savedValue = act.max_value !== null ? act.max_value : '';
+
+                        const div = document.createElement('div');
+                        div.className = 'activity-item';
+                        div.innerHTML = `
+                            <span>${act.activity_name}</span>
+                            <div class="input-group">
+                                <input type="number" 
+                                       class="max-input" 
+                                       data-activity="${act.activity_name}" 
+                                       value="${savedValue}" 
+                                       placeholder="0">
+                                <span class="type-label">${label}</span>
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    });
+                    
+                    attachListeners();
+                })
+                .catch(err => console.error("Error loading activities:", err));
+        };
+
+        function attachListeners() {
+            document.querySelectorAll('.max-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const element = this;
+                    const activity = element.dataset.activity;
+                    const value = element.value;
+
+                    fetch('../backend/save-max.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ activity: activity, max_value: value })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        element.style.borderColor = data.success ? 'green' : 'red';
+                    })
+                    .catch(err => {
+                        element.style.borderColor = 'red';
+                    });
+                });
+            });
+        }
+    </script>
+</body>
+</html>
