@@ -1,36 +1,18 @@
 const logout = async () => {
-  try {
-    await fetch("../backend/auth.php?action=logout", {
-      credentials: "include",
-    });
-  } catch (error) {
-    console.error("Error during logout:", error);
-  }
+  await fetch("../backend/auth.php?action=logout");
   window.location.href = "login.html";
 };
 
 async function checkAuth() {
-  const isAuthPage =
-    window.location.pathname.includes("login.html") ||
-    window.location.pathname.includes("register.html") ||
-    window.location.pathname.includes("create-account.html");
-
   try {
-    const response = await fetch("../backend/auth.php", {
-      credentials: "include",
-    });
+    const response = await fetch("../backend/auth.php");
     const data = await response.json();
 
-    if (data.status !== "success" && !isAuthPage) {
+    if (data.status !== "success") {
       window.location.href = "login.html";
-    } else if (data.status === "success" && isAuthPage) {
-      window.location.href = "workouts.html";
     }
   } catch (error) {
-    console.error("Error checking authentication:", error);
-    if (!isAuthPage) {
-      window.location.href = "login.html";
-    }
+    window.location.href = "login.html";
   }
 }
 

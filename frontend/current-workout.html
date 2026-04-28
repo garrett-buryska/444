@@ -185,9 +185,6 @@
           }
 
           if (typeof data[0].liftID === "undefined") {
-            console.error(
-              "liftID is missing from the workout data. Cannot save progress.",
-            );
             display.innerHTML =
               "<div class='card'><p>Error: Data from server is malformed (missing liftID). Cannot track progress.</p></div>";
             document.querySelector(".btn-finish").disabled = true;
@@ -230,7 +227,6 @@
             display.appendChild(card);
           });
         } catch (err) {
-          console.error("Fetch Error:", err);
           display.innerHTML = `<div class='card'><p>Error loading workout: ${err.message}</p></div>`;
         }
       }
@@ -287,7 +283,6 @@
             button.textContent = "Finish Workout";
           }
         } catch (error) {
-          console.error("Error finishing workout:", error);
           alert("An error occurred while finishing the workout.");
           button.disabled = false;
           button.textContent = "Finish Workout";

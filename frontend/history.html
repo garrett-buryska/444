@@ -21,7 +21,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         const workoutList = document.getElementById("workoutList");
 
-        fetch(`../backend/get_history.php`, { credentials: "include" })
+        fetch(`../backend/get_history.php`)
           .then((response) => response.json())
           .then((data) => {
             workoutList.innerHTML = "";
@@ -61,7 +61,6 @@
             }
           })
           .catch((error) => {
-            console.error("Error fetching history:", error);
             workoutList.innerHTML =
               '<p class="error" style="color: #ff5555;">Failed to load workout history. Please try again later.</p>';
           });

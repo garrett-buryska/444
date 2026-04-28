@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gym App - Create Account</title>
     <link rel="stylesheet" href="Style.css" />
+    <script src="login-auth-check.js"></script>
   </head>
   <body>
     <div class="auth-wrapper">
@@ -118,7 +119,6 @@
             headers: {
               "Content-Type": "application/json",
             },
-            credentials: "include",
             body: JSON.stringify({
               username: usernameInput,
               password: passwordInput,
@@ -145,7 +145,6 @@
               }
             })
             .catch((error) => {
-              console.error("Error:", error);
               messageDiv.className = "auth-message error";
               messageDiv.textContent =
                 "An error occurred connecting to the server.";

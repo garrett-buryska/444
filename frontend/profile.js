@@ -1,3 +1,4 @@
+// form inputs
 const usernameInput = document.getElementById("username");
 const nameInput = document.getElementById("name");
 const imgUrlInput = document.getElementById("img_url");
@@ -20,7 +21,7 @@ function setSelectedSkill(level) {
   selectedSkillLevel = level || "";
   skillButtons.forEach((button) => {
     const isSelected = button.textContent === selectedSkillLevel;
-    button.classList.toggle("active", isSelected);
+    button.classList.toggle("active", isSelected); // add active class when active
   });
 }
 
@@ -39,10 +40,7 @@ function setProfileImage(url) {
 
 async function loadProfile() {
   try {
-    const response = await fetch("../backend/profile.php", {
-      credentials: "include",
-    });
-    console.log(response);
+    const response = await fetch("../backend/profile.php");
     const data = await response.json();
 
     if (data.status !== "success") {
@@ -60,7 +58,6 @@ async function loadProfile() {
     setSelectedSkill(profile.skill_level || "");
     setMessage("");
   } catch (error) {
-    console.error(error);
     setMessage("An error occurred while loading the profile.", "error");
   }
 }
@@ -72,7 +69,6 @@ async function saveProfile() {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include",
       body: JSON.stringify({
         name: nameInput.value.trim(),
         img_url: imgUrlInput.value.trim(),
@@ -100,7 +96,6 @@ async function saveProfile() {
     setSelectedSkill(profile.skill_level || "");
     setMessage(data.message || "Profile saved.", "success");
   } catch (error) {
-    console.error(error);
     setMessage("An error occurred while saving the profile.", "error");
   }
 }
