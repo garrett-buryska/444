@@ -1,25 +1,6 @@
 <?php
 session_start();
 
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-header("Access-Control-Allow-Origin: $origin");
-header("Access-Control-Allow-Credentials: true");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-
-if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
-    http_response_code(204);
-    exit;
-}
-
-function respond($payload, $statusCode = 200)
-{
-    http_response_code($statusCode);
-    echo json_encode($payload);
-    exit;
-}
-
 function calculateAge($dob)
 {
     if (!$dob) {
@@ -44,7 +25,8 @@ try {
         $username = $_SESSION["username"] ?? "";
 
         if ($username === "") {
-            respond(["status" => "error", "message" => "Username is required."], 400);
+            echo json_encode(["status" => "error", "message" => "Username is required."]);
+            exit;
         }
 
         $stmt = $pdo->prepare("
@@ -56,15 +38,14 @@ try {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
-            respond(["status" => "error", "message" => "User not found."], 404);
+            echo json_encode(["status" => "error", "message" => "User not found."]);
+            exit;
         }
 
         $user["age"] = calculateAge($user["DoB"]);
 
-        respond([
-            "status" => "success",
-            "profile" => $user
-        ]);
+        echo json_encode(["status" => "success", "profile" => $user]);
+        exit;
     }
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -73,7 +54,8 @@ try {
         $username = trim($_SESSION["username"] ?? "");
 
         if ($username === "") {
-            respond(["status" => "error", "message" => "Username is required."], 400);
+            echo json_encode(["status" => "error", "message" => "Username is required."]);
+            exit;
         }
 
         $name = trim($data["name"] ?? "");
@@ -87,7 +69,8 @@ try {
         $existsStmt->execute([":username" => $username]);
 
         if (!$existsStmt->fetchColumn()) {
-            respond(["status" => "error", "message" => "User not found."], 404);
+            echo json_encode(["status" => "error", "message" => "User not found."]);
+            exit;
         }
 
         $updateStmt = $pdo->prepare("
@@ -120,15 +103,11 @@ try {
         $profile = $profileStmt->fetch(PDO::FETCH_ASSOC);
         $profile["age"] = calculateAge($profile["DoB"]);
 
-        respond([
-            "status" => "success",
-            "message" => "Profile updated successfully.",
-            "profile" => $profile
-        ]);
+        echo json_encode(["status" => "success", "message" => "Profile updated successfully.", "profile" => $profile]);
+        exit;
     }
 
-    respond(["status" => "error", "message" => "Method not allowed."], 405);
+    echo json_encode(["status" => "error", "message" => "Method not allowed."]);
 } catch (PDOException $e) {
-    respond(["status" => "error", "message" => "Database error: " . $e->getMessage()], 500);
+    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
-?>
