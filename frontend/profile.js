@@ -38,20 +38,10 @@ function setProfileImage(url) {
 }
 
 async function loadProfile() {
-  const username = localStorage.getItem("gymUser");
-
-  if (!username) {
-    setMessage("No logged-in user found. Please log in first.", "error");
-    saveButton.disabled = true;
-    return;
-  }
-
-  usernameInput.value = username;
-
   try {
-    const response = await fetch(
-      `../backend/profile.php?username=${encodeURIComponent(username)}`,
-    );
+    const response = await fetch("../backend/profile.php", {
+      credentials: "include",
+    });
     const data = await response.json();
 
     if (data.status !== "success") {
@@ -60,6 +50,7 @@ async function loadProfile() {
     }
 
     const profile = data.profile;
+    usernameInput.value = profile.username || "";
     nameInput.value = profile.name || "";
     setProfileImage(profile.img_url || "");
     dobInput.value = profile.DoB || "";
@@ -74,21 +65,14 @@ async function loadProfile() {
 }
 
 async function saveProfile() {
-  const username = usernameInput.value.trim();
-
-  if (!username) {
-    setMessage("Username is required.", "error");
-    return;
-  }
-
   try {
     const response = await fetch("../backend/profile.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
-        username,
         name: nameInput.value.trim(),
         img_url: imgUrlInput.value.trim(),
         DoB: dobInput.value,
@@ -106,6 +90,7 @@ async function saveProfile() {
     }
 
     const profile = data.profile;
+    usernameInput.value = profile.username || "";
     nameInput.value = profile.name || "";
     setProfileImage(profile.img_url || "");
     dobInput.value = profile.DoB || "";
