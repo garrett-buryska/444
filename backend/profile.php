@@ -1,5 +1,9 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+session_start();
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+header("Access-Control-Allow-Origin: $origin");
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -9,13 +13,15 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     exit;
 }
 
-function respond($payload, $statusCode = 200) {
+function respond($payload, $statusCode = 200)
+{
     http_response_code($statusCode);
     echo json_encode($payload);
     exit;
 }
 
-function calculateAge($dob) {
+function calculateAge($dob)
+{
     if (!$dob) {
         return null;
     }
@@ -35,7 +41,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if ($_SERVER["REQUEST_METHOD"] === "GET") {
-        $username = $_GET["username"] ?? "";
+        $username = $_SESSION["username"] ?? "";
 
         if ($username === "") {
             respond(["status" => "error", "message" => "Username is required."], 400);
@@ -64,11 +70,12 @@ try {
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        if (!$data || empty($data["username"])) {
+        $username = trim($_SESSION["username"] ?? "");
+
+        if ($username === "") {
             respond(["status" => "error", "message" => "Username is required."], 400);
         }
 
-        $username = trim($data["username"]);
         $name = trim($data["name"] ?? "");
         $imgUrl = trim($data["img_url"] ?? "");
         $weight = isset($data["weight"]) && $data["weight"] !== "" ? $data["weight"] : null;

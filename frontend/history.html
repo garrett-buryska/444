@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jim's Gym - Previous Workouts</title>
+    <link rel="stylesheet" href="Style.css" />
+    <style>
+      .history-container {
+        padding: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        color: white;
+      }
+      .workout-card {
+        background-color: #2d2d2d;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
+      .workout-header {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #444;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .workout-type {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #007acc;
+        text-transform: capitalize;
+      }
+      .workout-date {
+        color: #aaa;
+        font-size: 0.9rem;
+      }
+      .workout-exercises {
+        color: #ddd;
+      }
+      .no-workouts {
+        text-align: center;
+        color: #aaa;
+        font-style: italic;
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="navbar.js"></script>
+    <nav id="navbar"></nav>
+
+    <main class="history-container">
+      <h1>Previous Workouts</h1>
+      <div id="workoutList">
+        <p>Loading your workout history...</p>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const workoutList = document.getElementById("workoutList");
+
+        // Fetch data from the PHP backend
+        fetch(`../backend/get_history.php`, { credentials: "include" })
+          .then((response) => response.json())
+          .then((data) => {
+            workoutList.innerHTML = ""; // Clear loading message
+
+            if (data.status === "success") {
+              if (data.data.length === 0) {
+                workoutList.innerHTML =
+                  '<p class="no-workouts">You haven\'t completed any workouts yet. Time to hit the gym!</p>';
+                return;
+              }
+
+              // Create a card for each workout
+              data.data.forEach((workout) => {
+                const date = new Date(workout.time_stamp).toLocaleString();
+                const type = workout.workout_type
+                  ? workout.workout_type
+                  : "General Workout";
+                const exercises = workout.exercises || "No exercises logged";
+
+                const card = document.createElement("div");
+                card.className = "workout-card";
+                card.innerHTML = `
+                                <div class="workout-header">
+                                    <div class="workout-type">${type}</div>
+                                    <div class="workout-date">${date}</div>
+                                </div>
+                                <div class="workout-exercises">
+                                    <strong>Exercises:</strong> ${exercises}
+                                </div>
+                            `;
+                workoutList.appendChild(card);
+              });
+            } else {
+              workoutList.innerHTML = `<p class="error" style="color: #ff5555;">Error: ${data.message}</p>`;
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching history:", error);
+            workoutList.innerHTML =
+              '<p class="error" style="color: #ff5555;">Failed to load workout history. Please try again later.</p>';
+          });
+      });
+    </script>
+  </body>
+</html>

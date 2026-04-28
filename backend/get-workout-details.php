@@ -1,14 +1,20 @@
 <?php
 header('Content-Type: application/json');
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+header("Access-Control-Allow-Origin: $origin");
+header("Access-Control-Allow-Credentials: true");
 
 try {
-    $db = new PDO('sqlite:gym_app.db');
+    $dbPath = __DIR__ . '/gym_app.db';
+    $db = new PDO('sqlite:' . $dbPath);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $workoutId = $_GET['id'] ?? null;
 
     if (!$workoutId) {
-        throw new Exception("No ID provided");
+        http_response_code(400);
+        echo json_encode(['error' => 'No workout ID provided.']);
+        exit;
     }
 
     // Join Lift, Activities, and Sets to get everything in one query
@@ -20,13 +26,14 @@ try {
                 A.youtube_link, 
                 A.main_muscle_group, 
                 S.set_number, 
-                S.set_text
+                S.set_text,
+                S.completed
               FROM Lift L
               JOIN Activities A ON L.activity_name = A.activity_name
               JOIN Sets S ON L.liftID = S.liftID
               WHERE L.workoutID = ?
               ORDER BY L.liftID, S.set_number";
-              
+
     $stmt = $db->prepare($query);
     $stmt->execute([$workoutId]);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -35,10 +42,11 @@ try {
     $workoutData = [];
     foreach ($results as $row) {
         $liftId = $row['liftID'];
-        
+
         // If this lift isn't in our array yet, initialize it
         if (!isset($workoutData[$liftId])) {
             $workoutData[$liftId] = [
+                'liftID' => $liftId,
                 'activity_name' => $row['activity_name'],
                 'num_sets' => $row['num_sets'],
                 'description' => $row['description'],
@@ -47,19 +55,20 @@ try {
                 'sets' => [] // This will hold the set details
             ];
         }
-        
+
         // Add the set info to this lift
         $workoutData[$liftId]['sets'][] = [
             'set_number' => $row['set_number'],
-            'set_text' => $row['set_text']
+            'set_text' => $row['set_text'],
+            'completed' => (bool) $row['completed']
         ];
     }
 
     // Re-index array to be a clean list
     echo json_encode(array_values($workoutData));
 
-} catch (PDOException $e) {
+} catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database Error: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Server Error: ' . $e->getMessage()]);
 }
 ?>

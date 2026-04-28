@@ -4,12 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gym App Login</title>
-    <script src="helpers.js"></script>
-    <script>
-      if (loggedIn()) {
-        window.location.href = "workouts.html";
-      }
-    </script>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -103,6 +97,7 @@
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               username: user,
               password: pass,
@@ -111,9 +106,6 @@
             .then((response) => response.json())
             .then((data) => {
               if (data.status === "success") {
-                // Save the username to the browser's local storage
-                localStorage.setItem("gymUser", user);
-
                 // Redirect to the new dashboard page
                 window.location.href = "workouts.html";
               } else {

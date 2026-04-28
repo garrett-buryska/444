@@ -1,8 +1,13 @@
 <?php
 // backend/login.php
 
+// Start the session to be able to store data across pages
+session_start();
+
 // Allow cross-origin requests if you eventually run frontend and backend on different ports
-header("Access-Control-Allow-Origin: *");
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+header("Access-Control-Allow-Origin: $origin");
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 
@@ -39,9 +44,14 @@ try {
 
     if ($user) {
         // User found!
+
+        // Save the username to the session
+        $_SESSION["username"] = $username;
+
         echo json_encode([
             "status" => "success",
-            "message" => "Welcome back, " . htmlspecialchars($username) . "!"
+            "message" => "Welcome back, " . htmlspecialchars($username) . "!",
+            "username" => $username
         ]);
     } else {
         // User not found or password incorrect

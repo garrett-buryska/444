@@ -1,7 +1,17 @@
 <?php
+// Start the session to access $_SESSION variables
+session_start();
+
 try {
     $db = new PDO('sqlite:gym_app.db');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Get username from Session strictly
+    $username = $_SESSION['username'] ?? null;
+
+    if (!$username) {
+        die("Error: User is not logged in. Username is required to create a workout.");
+    }
 
     // Get the category and ensure it matches the keys in our switch statement
     $selectedCategory = strtolower(str_replace(' ', '-', $_GET['category'] ?? 'chest'));
@@ -29,8 +39,8 @@ try {
     }
 
     // 1. Create Workout Header
-    $stmt = $db->prepare("INSERT INTO Workout (time_stamp, workout_type) VALUES (CURRENT_TIMESTAMP, ?)");
-    $stmt->execute([$selectedCategory]);
+    $stmt = $db->prepare("INSERT INTO Workout (time_stamp, workout_type, username) VALUES (CURRENT_TIMESTAMP, ?, ?)");
+    $stmt->execute([$selectedCategory, $username]);
     $workoutId = $db->lastInsertId();
 
     // 2. Select 4 Random Lifts
@@ -46,7 +56,7 @@ try {
 
         foreach ($lifts as $lift) {
             $numSets = rand($profile['minSets'], $profile['maxSets']);
-            
+
             $insertLiftStmt->execute([$workoutId, $lift['activity_name'], $numSets]);
             $liftId = $db->lastInsertId();
 
@@ -54,7 +64,7 @@ try {
                 // Calculation: Start at profile base, subtract based on decrement
                 $currentReps = $profile['startReps'] - (($i - 1) * $profile['decrement']);
                 $currentReps = max(2, $currentReps); // Never go below 2 reps
-                
+
                 // Set text logic: Default to "X Reps", but change to "Until Failure" on last set 50% of the time
                 if ($i == $numSets && rand(0, 1) == 1) {
                     $text = "Until Failure";
