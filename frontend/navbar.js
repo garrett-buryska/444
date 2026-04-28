@@ -42,6 +42,14 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="navbar">
         <a href="#" class="nav-brand">Jim's Gym</a>
 
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+
+        <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
+
         <ul class="nav-links">
           <li><a href="profile.html">My Profile</a></li>
           <li><a href="workouts.html">Start a Workout</a></li>
