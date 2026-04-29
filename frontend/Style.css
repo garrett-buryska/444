@@ -903,13 +903,131 @@ body {
 .profile-save-button {
   margin-top: 5px;
 }
+
 /* Specifically target only the profile page container */
 .profile-page {
   transform: scale(0.90);
-  transform-origin: top center; /* Keeps the content centered and pinned to the top */
-  width: 111.11%;               /* Offsets the 0.9 shrink to keep it full-width (1 / 0.9) */
-  margin-left: -5.55%;          /* Recenters the offset width */
+  transform-origin: top center;
+  /* Keeps the content centered and pinned to the top */
+  width: 111.11%;
+  /* Offsets the 0.9 shrink to keep it full-width (1 / 0.9) */
+  margin-left: -5.55%;
+  /* Recenters the offset width */
 }
 
 /* Optional: If the navbar looks too big compared to the 90% screen, 
    you can wrap the entire body in a specific class for this page only */
+body {
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  max-width: 900px;
+  width: 100%;
+  /* Ensures it fills the container up to max-width */
+  margin: 20px auto 10px auto;
+  padding: 0 10px;
+  /* Synchronized with grid padding */
+  flex-shrink: 0;
+}
+
+.page-header h2 {
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+#search-bar {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: block;
+}
+
+/* Create the scrollable area */
+.scroll-wrapper {
+  flex-grow: 1;
+  overflow-y: scroll;
+  padding-bottom: 50px;
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px;
+  /* Matches header alignment */
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  width: 140px;
+  justify-content: flex-end;
+}
+
+input.max-input {
+  width: 60px;
+  padding: 5px;
+  text-align: center;
+}
+
+.type-label {
+  margin-left: 8px;
+  font-weight: bold;
+  color: #555;
+  font-size: 0.9em;
+  width: 60px;
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    text-align: center;
+  }
+
+  .page-header h2 {
+    text-align: center;
+  }
+
+  #search-bar {
+    margin: 0 auto 10px auto;
+  }
+}
