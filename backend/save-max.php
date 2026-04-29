@@ -7,6 +7,7 @@ if ($username === "") {
     exit;
 }
 
+// Get the activity and max value from the request body
 $data = json_decode(file_get_contents('php://input'), true);
 
 $activity = $data['activity'] ?? "";
@@ -16,6 +17,7 @@ try {
     $db = new PDO('sqlite:gym_app.db');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Use an UPSERT query to insert or update the max value for the given activity and user
     $stmt = $db->prepare("
         INSERT INTO \"Max\" (activity_name, username, max_value) 
         VALUES (:activity, :user, :val)

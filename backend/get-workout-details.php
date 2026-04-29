@@ -10,7 +10,7 @@ try {
         exit;
     }
 
-    // 1. Added S.weight to the SELECT statement
+    // query to fetch lift details along with activity information and set details for the given workout ID
     $query = "SELECT 
                 L.liftID, 
                 L.activity_name, 
@@ -33,6 +33,8 @@ try {
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $workoutData = [];
+    
+    // Process the results to structure them by lift and include sets as a nested array
     foreach ($results as $row) {
         $liftId = $row['liftID'];
 
@@ -48,7 +50,6 @@ try {
             ];
         }
 
-        // 2. Added 'weight' to the array
         $workoutData[$liftId]['sets'][] = [
             'set_number' => $row['set_number'],
             'set_text' => $row['set_text'],

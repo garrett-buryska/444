@@ -32,6 +32,7 @@ try {
     $pdo = new PDO("sqlite:" . $dbPath);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    //Prepare and execute the SQL statement to insert a new user
     $stmt = $db->prepare("
         INSERT INTO User (username, password, name, img_url, DoB, weight, height, skill_level) 
         VALUES (:username, :password, :name, :imgUrl, :dob, :weight, :height, :skillLevel)
@@ -48,8 +49,10 @@ try {
         ':dob' => $dob
     ]);
 
+    // Set the session variable for the username
     $_SESSION['username'] = $username;
 
+    // Return a success response with the username
     echo json_encode(["status" => "success", "message" => "Account created successfully.", "username" => $username]);
 
 } catch (PDOException $e) {

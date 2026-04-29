@@ -6,8 +6,7 @@ try {
     $dbPath = __DIR__ . '/gym_app.db';
     $db = new PDO('sqlite:' . $dbPath);
 
-    // We LEFT JOIN with the Max table so we get all activities, 
-    // plus the max_value if it exists for this user.
+    // Get all activities and the user's max values for those activities
     $stmt = $db->prepare("
         SELECT A.activity_name, A.set_type, M.max_value 
         FROM Activities A 
