@@ -28,9 +28,8 @@ $skillLevel = $data->skill ?? null;
 
 try {
     // Connect to the database
-    $dbPath = __DIR__ . '/gym_app.db';
-    $pdo = new PDO("sqlite:" . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO('sqlite:gym_app.db');
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     //Prepare and execute the SQL statement to insert a new user
     $stmt = $db->prepare("
