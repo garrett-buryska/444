@@ -15,6 +15,7 @@ try {
     $db = new PDO("sqlite:gym_app.db");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Check for User with matching username and password
     $stmt = $db->prepare("SELECT * FROM User WHERE username = :username AND password = :password");
 
     $stmt->execute([
