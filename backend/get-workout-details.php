@@ -1,13 +1,11 @@
 <?php
 try {
-    $dbPath = __DIR__ . '/gym_app.db';
-    $pdo = new PDO('sqlite:' . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO("sqlite:gym_app.db");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $workoutId = $_GET['id'] ?? null;
 
     if (!$workoutId) {
-        http_response_code(400);
         echo json_encode(['error' => 'No workout ID provided.']);
         exit;
     }
@@ -30,7 +28,7 @@ try {
               WHERE L.workoutID = ?
               ORDER BY L.liftID, S.set_number";
 
-    $stmt = $pdo->prepare($query);
+    $stmt = $db->prepare($query);
     $stmt->execute([$workoutId]);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -55,14 +53,12 @@ try {
             'set_number' => $row['set_number'],
             'set_text' => $row['set_text'],
             'completed' => (bool) $row['completed'],
-            'weight' => (float) $row['weight'] // Cast to float for consistency
+            'weight' => (float) $row['weight']
         ];
     }
 
     echo json_encode(array_values($workoutData));
 
 } catch (Exception $e) {
-    http_response_code(500);
     echo json_encode(['error' => 'Server Error: ' . $e->getMessage()]);
 }
-?>

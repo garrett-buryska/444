@@ -8,7 +8,8 @@ $data = json_decode(file_get_contents("php://input"));
 if (
     !isset($data->username) ||
     !isset($data->password) ||
-    !isset($data->name)
+    !isset($data->name) ||
+    !isset($data->dob)
 ) {
     echo json_encode(["status" => "error", "message" => "Missing required fields."]);
     exit;
@@ -31,7 +32,7 @@ try {
     $pdo = new PDO("sqlite:" . $dbPath);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $stmt = $pdo->prepare("
+    $stmt = $db->prepare("
         INSERT INTO User (username, password, name, img_url, DoB, weight, height, skill_level) 
         VALUES (:username, :password, :name, :imgUrl, :dob, :weight, :height, :skillLevel)
     ");

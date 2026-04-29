@@ -1,6 +1,11 @@
 <?php
 session_start();
-$username = $_SESSION['username'] ?? 'Guest';
+$username = $_SESSION['username'] ?? "";
+
+if (!$username) {
+    echo json_encode(["status" => "error", "message" => "Username is required."]);
+    exit;
+}
 
 try {
     $db = new PDO('sqlite:gym_app.db');
@@ -33,7 +38,7 @@ try {
         foreach ($lifts as $lift) {
             $actName = $lift['activity_name'];
             $max = $maxValues[$actName] ?? 0;
-            
+
             $avgSets = (int) $lift['average_sets'];
             $numSets = rand(max(1, $avgSets - 1), $avgSets + 1);
 
@@ -78,7 +83,7 @@ try {
                     // OTHER TYPES (Seconds, etc.)
                     $value = (int) $lift['average_reps'];
                     $text = $value . " " . ucfirst($type);
-                    $weight = 0; 
+                    $weight = 0;
                 }
 
                 // FAILURE LOGIC
@@ -106,4 +111,3 @@ try {
 } catch (PDOException $e) {
     echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
-?>

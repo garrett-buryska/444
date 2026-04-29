@@ -16,20 +16,20 @@ function calculateAge($dob)
     }
 }
 
+$username = $_SESSION["username"] ?? "";
+
+if ($username === "") {
+    echo json_encode(["status" => "error", "message" => "Username is required."]);
+    exit;
+}
+
 try {
-    $dbPath = __DIR__ . "/gym_app.db";
-    $pdo = new PDO("sqlite:" . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO("sqlite:gym_app.db");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // get profile
     if ($_SERVER["REQUEST_METHOD"] === "GET") {
-        $username = $_SESSION["username"] ?? "";
-
-        if ($username === "") {
-            echo json_encode(["status" => "error", "message" => "Username is required."]);
-            exit;
-        }
-
-        $stmt = $pdo->prepare("
+        $stmt = $db->prepare("
             SELECT username, name, img_url, weight, height, skill_level, DoB, bench_max, squat_max, deadlift_max
             FROM User
             WHERE username = :username
@@ -42,21 +42,13 @@ try {
             exit;
         }
 
-        $user["age"] = calculateAge($user["DoB"]);
-
         echo json_encode(["status" => "success", "profile" => $user]);
         exit;
     }
 
+    // submit profile
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $data = json_decode(file_get_contents("php://input"), true);
-
-        $username = trim($_SESSION["username"] ?? "");
-
-        if ($username === "") {
-            echo json_encode(["status" => "error", "message" => "Username is required."]);
-            exit;
-        }
 
         $name = trim($data["name"] ?? "");
         $imgUrl = trim($data["img_url"] ?? "");
@@ -65,7 +57,7 @@ try {
         $skillLevel = trim($data["skill_level"] ?? "");
         $dob = trim($data["DoB"] ?? "");
 
-        $existsStmt = $pdo->prepare("SELECT username FROM User WHERE username = :username");
+        $existsStmt = $db->prepare("SELECT username FROM User WHERE username = :username");
         $existsStmt->execute([":username" => $username]);
 
         if (!$existsStmt->fetchColumn()) {
@@ -73,7 +65,7 @@ try {
             exit;
         }
 
-        $updateStmt = $pdo->prepare("
+        $updateStmt = $db->prepare("
             UPDATE User
             SET name = :name,
                 img_url = :img_url,
@@ -94,14 +86,13 @@ try {
             ":username" => $username
         ]);
 
-        $profileStmt = $pdo->prepare("
+        $profileStmt = $db->prepare("
             SELECT username, name, img_url, weight, height, skill_level, DoB, bench_max, squat_max, deadlift_max
             FROM User
             WHERE username = :username
         ");
         $profileStmt->execute([":username" => $username]);
         $profile = $profileStmt->fetch(PDO::FETCH_ASSOC);
-        $profile["age"] = calculateAge($profile["DoB"]);
 
         echo json_encode(["status" => "success", "message" => "Profile updated successfully.", "profile" => $profile]);
         exit;
