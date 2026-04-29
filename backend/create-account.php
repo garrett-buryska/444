@@ -1,8 +1,10 @@
 <?php
 session_start();
 
+//Converts the JSON code to a PHP object
 $data = json_decode(file_get_contents("php://input"));
 
+//Check if required fields are present
 if (
     !isset($data->username) ||
     !isset($data->password) ||
@@ -13,7 +15,7 @@ if (
     exit;
 }
 
-// form stuff
+// Extracting variables from the data object
 $username = $data->username;
 $password = $data->password;
 $name = $data->name;
@@ -23,9 +25,12 @@ $weight = $data->weight ?? null;
 $height = $data->height ?? null;
 $skillLevel = $data->skill ?? null;
 
+
 try {
-    $db = new PDO("sqlite:gym_app.db");
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Connect to the database
+    $dbPath = __DIR__ . '/gym_app.db';
+    $pdo = new PDO("sqlite:" . $dbPath);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $stmt = $db->prepare("
         INSERT INTO User (username, password, name, img_url, DoB, weight, height, skill_level) 

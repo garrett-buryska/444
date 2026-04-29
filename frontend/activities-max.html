@@ -5,41 +5,69 @@
     <title>Update Maxes</title>
     <link rel="stylesheet" href="Style.css" />
     <style>
-        /* Center the main container */
+        .page-header {
+            max-width: 900px;
+            margin: 20px auto 10px auto;
+            padding: 0 10px;
+        }
+
+        .page-header h2 {
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        #search-bar {
+            width: 100%;
+            max-width: 300px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: block;
+        }
+
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             max-width: 900px;
-            margin: 20px auto; /* Centers the grid on the page */
+            margin: 0 auto 20px auto;
             padding: 10px;
         }
 
-        /* The item row: flex allows us to align Name left, Input right */
         .activity-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 8px;
-            border-bottom: 1px solid #ddd; /* Creates a "connected" look */
+            border-bottom: 1px solid #ddd;
         }
 
-        /* Ensure input boxes align vertically */
+        .hidden {
+            display: none !important;
+        }
+
         .input-group {
             display: flex;
             align-items: center;
-            width: 140px; /* Fixed width ensures inputs line up */
+            width: 140px;
             justify-content: flex-end;
         }
 
-        input { width: 60px; padding: 5px; text-align: center; }
+        input.max-input { width: 60px; padding: 5px; text-align: center; }
         .type-label { margin-left: 8px; font-weight: bold; color: #555; font-size: 0.9em; width: 60px; }
-        
-        h2 { text-align: center; }
 
-        /* Responsive: Stack to 1 column on mobile */
         @media (max-width: 768px) {
             .grid-container { grid-template-columns: 1fr; }
+            .page-header { text-align: center; }
+            .page-header h2 { text-align: center; }
+            #search-bar { margin: 0 auto 10px auto; }
         }
     </style>
 </head>
@@ -47,9 +75,15 @@
     <script src="navbar.js"></script>
     <nav id="navbar"></nav>
 
-    <h2>Enter Your Maxes</h2>
+    <div class="page-header">
+        <h2>Enter Your Maxes</h2>
+        <p class="subtitle">Maxes will affect amount of weight used on each set</p>
+        
+        <input type="text" id="search-bar" placeholder="Search exercises..." onkeyup="filterActivities()">
+    </div>
+
     <div class="grid-container" id="activity-body">
-        </div>
+    </div>
 
     <script>
         window.onload = function() {
@@ -59,11 +93,19 @@
                     const container = document.getElementById('activity-body');
                     
                     activities.forEach(act => {
-                        const label = (act.set_type === 'reps') ? 'lbs' : act.set_type;
+                        // LOGIC UPDATE: If type is 'reps' OR 'body', show 'lbs' as the label
+                        // (Usually body exercises still track reps, so lbs/reps label is standard)
+                        // If you specifically want the label to say "reps", use the logic below:
+                        let label = act.set_type;
+                        if (act.set_type === 'reps') label = 'lbs';
+                        if (act.set_type === 'body') label = 'reps';
+
                         const savedValue = act.max_value !== null ? act.max_value : '';
 
                         const div = document.createElement('div');
                         div.className = 'activity-item';
+                        div.setAttribute('data-name', act.activity_name.toLowerCase());
+                        
                         div.innerHTML = `
                             <span>${act.activity_name}</span>
                             <div class="input-group">
@@ -82,6 +124,20 @@
                 })
                 .catch(err => console.error("Error loading activities:", err));
         };
+
+        function filterActivities() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const items = document.querySelectorAll('.activity-item');
+
+            items.forEach(item => {
+                const name = item.getAttribute('data-name');
+                if (name.includes(query)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
 
         function attachListeners() {
             document.querySelectorAll('.max-input').forEach(input => {

@@ -24,7 +24,7 @@ try {
     $stmt->execute([$selectedCategory]);
     $lifts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3. Fetch Maxes for these specific activities
+    // 3. Fetch Maxes
     $activityNames = array_column($lifts, 'activity_name');
     $inQuery = implode(',', array_fill(0, count($activityNames), '?'));
     $stmtMax = $db->prepare("SELECT activity_name, max_value FROM \"Max\" WHERE username = ? AND activity_name IN ($inQuery)");
@@ -33,8 +33,6 @@ try {
 
     if (count($lifts) >= 4) {
         $insertLiftStmt = $db->prepare("INSERT INTO Lift (workoutID, activity_name, num_sets) VALUES (?, ?, ?)");
-
-        // Updated INSERT statement to include 'weight'
         $insertSetStmt = $db->prepare("INSERT INTO Sets (liftID, set_number, set_text, reps, weight) VALUES (?, ?, ?, ?, ?)");
 
         foreach ($lifts as $lift) {
@@ -49,44 +47,55 @@ try {
 
             for ($i = 1; $i <= $numSets; $i++) {
                 $type = $lift['set_type'];
+                $weight = 0;
+                $intensity = 0.60; 
+
+                // Intensity calculation logic
+                if ($i == 1) {
+                    $intensity = 0.60;
+                } elseif ($i == 2) {
+                    $intensity = 0.75;
+                } else {
+                    $intensity = min(0.95, 0.75 + (($i - 2) * 0.05));
+                }
 
                 if ($type === 'reps') {
-                    $value = (int) $lift['average_reps'] - (($i - 1) * 2);
-                    $value = max(2, $value);
+                    // WEIGHTED LOGIC
+                    $value = max(2, (int) $lift['average_reps'] - (($i - 1) * 2));
                     $text = $value . " Reps";
 
-                    // DYNAMIC WEIGHT LOGIC (Ascending with big initial jump)
                     if ($max > 0) {
-                        if ($i == 1) {
-                            // Start at 60%
-                            $intensity = 0.60;
-                        } elseif ($i == 2) {
-                            // Big jump to 75%
-                            $intensity = 0.75;
-                        } else {
-                            // Gradual increase of 5% per set thereafter
-                            $intensity = 0.75 + (($i - 2) * 0.05);
-                        }
-
-                        // Cap intensity at 95%
-                        $intensity = min($intensity, 0.95);
-
-                        // Calculate weight and round to nearest 5
                         $rawWeight = $max * $intensity;
                         $weight = round($rawWeight / 5) * 5;
+                    }
 
+                } elseif ($type === 'body') {
+                    // BODYWEIGHT LOGIC
+                    if ($max > 0) {
+                        $value = max(1, round($max * $intensity));
                     } else {
-                        $weight = 0; // Fallback if no max is set
+                        $value = (int) $lift['average_reps'];
                     }
+                    $text = $value . " Reps";
+                    $weight = 0;
 
-                    if ($i == $numSets && rand(0, 1) == 1) {
-                        $text = "Until Failure";
-                        $value = 0;
-                    }
                 } else {
+                    // OTHER TYPES (Seconds, etc.)
                     $value = (int) $lift['average_reps'];
                     $text = $value . " " . ucfirst($type);
                     $weight = 0;
+                }
+
+                // FAILURE LOGIC
+                // 1. If it's a 'body' type, ALWAYS end in failure
+                if ($type === 'body' && $i == $numSets) {
+                    $text = "Until Failure";
+                    $value = 0;
+                } 
+                // 2. If it's 'reps' type, randomly (50%) end in failure
+                elseif ($type === 'reps' && $i == $numSets && rand(0, 1) == 1) {
+                    $text = "Until Failure";
+                    $value = 0;
                 }
 
                 $insertSetStmt->execute([$liftId, $i, $text, $value, $weight]);

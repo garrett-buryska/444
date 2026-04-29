@@ -3,6 +3,7 @@ session_start();
 
 $action = $_GET['action'] ?? '';
 
+// Checks if the user wants to log out
 if ($action === 'logout') {
     session_unset(); // clear session
     session_destroy(); // delete session
@@ -11,7 +12,7 @@ if ($action === 'logout') {
     exit;
 }
 
-// checking if user logged in
+// Checking if user logged in
 if (isset($_SESSION['username'])) {
     echo json_encode(["status" => "success"]);
 } else {
