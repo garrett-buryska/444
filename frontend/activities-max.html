@@ -5,6 +5,20 @@
     <title>Update Maxes</title>
     <link rel="stylesheet" href="Style.css" />
     <style>
+      /* --- ADDED FOR SCROLLING WITHOUT SCROLLBAR --- */
+      html, body {
+        overflow-y: scroll; /* Ensures scrolling is enabled */
+        -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+        scrollbar-width: none;  /* Hide scrollbar for Firefox */
+      }
+
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar {
+        display: none;
+      }
+      /* ------------------------------------------- */
+
       .page-header {
         max-width: 900px;
         margin: 20px auto 10px auto;
@@ -117,9 +131,6 @@
             const container = document.getElementById("activity-body");
 
             activities.forEach((act) => {
-              // LOGIC UPDATE: If type is 'reps' OR 'body', show 'lbs' as the label
-              // (Usually body exercises still track reps, so lbs/reps label is standard)
-              // If you specifically want the label to say "reps", use the logic below:
               let label = act.set_type;
               if (act.set_type === "reps") label = "lbs";
               if (act.set_type === "body") label = "reps";
