@@ -254,7 +254,7 @@ body {
   color: #1a1a1a;
 }
 
-.profile-section+.profile-section {
+.profile-section + .profile-section {
   padding-top: 18px;
 }
 
@@ -334,12 +334,12 @@ body {
   font-weight: 500;
 }
 
-.profile-message.success {
-  color: #0f7a38;
+.error {
+  color: #ff5555;
 }
 
-.profile-message.error {
-  color: #b42318;
+.success {
+  color: #0f7a38;
 }
 
 .profile-actions {
@@ -459,7 +459,7 @@ body {
     padding: 12px 0;
   }
 
-  .nav-toggle:checked~.nav-links {
+  .nav-toggle:checked ~ .nav-links {
     display: flex;
   }
 
@@ -589,7 +589,7 @@ body {
   padding: 20px;
 }
 
-nav+.auth-wrapper {
+nav + .auth-wrapper {
   min-height: calc(100vh - 70px);
 }
 
@@ -675,14 +675,6 @@ nav+.auth-wrapper {
   text-align: center;
   font-size: 0.9rem;
   font-weight: 500;
-}
-
-.auth-message.error {
-  color: #b42318;
-}
-
-.auth-message.success {
-  color: #0f7a38;
 }
 
 .auth-image-preview {
@@ -905,10 +897,10 @@ body {
 }
 /* Specifically target only the profile page container */
 .profile-page {
-  transform: scale(0.90);
+  transform: scale(0.9);
   transform-origin: top center; /* Keeps the content centered and pinned to the top */
-  width: 111.11%;               /* Offsets the 0.9 shrink to keep it full-width (1 / 0.9) */
-  margin-left: -5.55%;          /* Recenters the offset width */
+  width: 111.11%; /* Offsets the 0.9 shrink to keep it full-width (1 / 0.9) */
+  margin-left: -5.55%; /* Recenters the offset width */
 }
 
 /* Optional: If the navbar looks too big compared to the 90% screen, 

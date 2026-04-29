@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jim's Gym - Previous Workouts</title>
+    <title>Previous Workouts</title>
     <link rel="stylesheet" href="Style.css" />
   </head>
   <body>
@@ -16,55 +16,6 @@
         <p>Loading your workout history...</p>
       </div>
     </main>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const workoutList = document.getElementById("workoutList");
-
-        fetch(`../backend/get_history.php`)
-          .then((response) => response.json())
-          .then((data) => {
-            workoutList.innerHTML = "";
-
-            if (data.status === "success") {
-              if (data.data.length === 0) {
-                workoutList.innerHTML =
-                  '<p class="no-workouts">You haven\'t completed any workouts yet. Time to hit the gym!</p>';
-                return;
-              }
-
-              data.data.forEach((workout) => {
-                const date = new Date(workout.time_stamp).toLocaleString();
-                const type = workout.workout_type
-                  ? workout.workout_type
-                  : "General Workout";
-                const exercises = workout.exercises || "No exercises logged";
-
-                const card = document.createElement("div");
-                card.className = "history-card";
-                card.style.cursor = "pointer";
-                card.onclick = () =>
-                  (window.location.href = `current-workout.html?id=${workout.workout_Id}`);
-                card.innerHTML = ` 
-                                <div class="history-header">
-                                    <div class="history-type">${type}</div>
-                                    <div class="history-date">${date}</div>
-                                </div>
-                                <div class="history-exercises">
-                                    <strong>Exercises:</strong> ${exercises}
-                                </div>
-                            `;
-                workoutList.appendChild(card);
-              });
-            } else {
-              workoutList.innerHTML = `<p class="error" style="color: #ff5555;">Error: ${data.message}</p>`;
-            }
-          })
-          .catch((error) => {
-            workoutList.innerHTML =
-              '<p class="error" style="color: #ff5555;">Failed to load workout history. Please try again later.</p>';
-          });
-      });
-    </script>
   </body>
+  <script src="history.js"></script>
 </html>

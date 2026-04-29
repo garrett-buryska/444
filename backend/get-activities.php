@@ -3,8 +3,7 @@ session_start();
 $username = $_SESSION['username'] ?? 'Guest';
 
 try {
-    $dbPath = __DIR__ . '/gym_app.db';
-    $db = new PDO('sqlite:' . $dbPath);
+    $db = new PDO("sqlite:gym_app.db");
 
     // Get all activities and the user's max values for those activities
     $stmt = $db->prepare("
@@ -21,4 +20,3 @@ try {
 } catch (Exception $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }
-?>
