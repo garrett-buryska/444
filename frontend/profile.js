@@ -2,11 +2,15 @@
 const usernameInput = document.getElementById("username");
 const nameInput = document.getElementById("name");
 const imgUrlInput = document.getElementById("img_url");
-const profileImagePreview = document.getElementById("profileImagePreview");
+const profileImagePreview = document.getElementById(
+  "profileImagePreview",
+);
 const dobInput = document.getElementById("dob");
 const heightInput = document.getElementById("height");
 const weightInput = document.getElementById("weight");
-const skillButtons = Array.from(document.querySelectorAll(".skill-chip"));
+const skillButtons = Array.from(
+  document.querySelectorAll(".skill-chip"),
+);
 const saveButton = document.querySelector(".profile-save-button");
 const messageEl = document.getElementById("profileMessage");
 
@@ -25,6 +29,8 @@ function setSelectedSkill(level) {
   });
 }
 
+// Allows user to set profile images via image URl
+
 function setProfileImage(url) {
   const imageUrl = url || "";
   imgUrlInput.value = imageUrl;
@@ -38,6 +44,8 @@ function setProfileImage(url) {
   }
 }
 
+// Loads the profile information from the database
+
 async function loadProfile() {
   try {
     const response = await fetch("../backend/profile.php");
@@ -49,6 +57,8 @@ async function loadProfile() {
     }
 
     const profile = data.profile;
+
+    // Retreives username, name, img_url, DoB, height, weight, and skill level from the database
     usernameInput.value = profile.username || "";
     nameInput.value = profile.name || "";
     setProfileImage(profile.img_url || "");
@@ -58,9 +68,14 @@ async function loadProfile() {
     setSelectedSkill(profile.skill_level || "");
     setMessage("");
   } catch (error) {
-    setMessage("An error occurred while loading the profile.", "error");
+    setMessage(
+      "An error occurred while loading the profile.",
+      "error",
+    );
   }
 }
+
+// Updates the database when the user edits their profile
 
 async function saveProfile() {
   try {
@@ -86,6 +101,8 @@ async function saveProfile() {
       return;
     }
 
+    // For profile fill with database imformation or leave blank
+
     const profile = data.profile;
     usernameInput.value = profile.username || "";
     nameInput.value = profile.name || "";
@@ -96,7 +113,10 @@ async function saveProfile() {
     setSelectedSkill(profile.skill_level || "");
     setMessage(data.message || "Profile saved.", "success");
   } catch (error) {
-    setMessage("An error occurred while saving the profile.", "error");
+    setMessage(
+      "An error occurred while saving the profile.",
+      "error",
+    );
   }
 }
 

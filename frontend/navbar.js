@@ -3,6 +3,8 @@ const logout = async () => {
   window.location.href = "login.html";
 };
 
+// Checks if user is logged in or not
+
 async function checkAuth() {
   try {
     const response = await fetch("../backend/auth.php");
@@ -19,6 +21,8 @@ async function checkAuth() {
 document.addEventListener("DOMContentLoaded", () => {
   const navbarContainer = document.getElementById("navbar");
   checkAuth();
+
+  // The HTML for the navbar layout dependent on screen size
   if (navbarContainer) {
     navbarContainer.innerHTML = `
     <div class="navbar">
