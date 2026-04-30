@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gym App - Create Account</title>
+    <title>Create Account</title>
     <link rel="stylesheet" href="Style.css" />
     <script src="login-auth-check.js"></script>
   </head>
@@ -40,8 +40,6 @@
             class="auth-input"
             placeholder="Profile Image URL (Optional)"
           />
-          <img id="imgPreview" class="auth-image-preview" alt="Image Preview" />
-
           <input class="auth-input" id="dob" type="date" required />
 
           <div class="auth-row">
@@ -82,74 +80,6 @@
         <div id="message" class="auth-message"></div>
       </div>
     </div>
-
-    <script>
-      const imgUrlInput = document.getElementById("img_url");
-      const imgPreview = document.getElementById("imgPreview");
-
-      imgUrlInput.addEventListener("input", function () {
-        if (this.value.trim() !== "") {
-          imgPreview.src = this.value;
-          imgPreview.style.display = "block";
-        } else {
-          imgPreview.style.display = "none";
-        }
-      });
-      imgPreview.addEventListener("error", function () {
-        imgPreview.style.display = "none";
-      });
-
-      document
-        .getElementById("createAccountForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-
-          const usernameInput = document.getElementById("username").value;
-          const passwordInput = document.getElementById("password").value;
-          const nameInput = document.getElementById("name").value;
-          const imgUrlVal = document.getElementById("img_url").value;
-          const dobVal = document.getElementById("dob").value;
-          const weightVal = parseFloat(document.getElementById("weight").value);
-          const heightVal = parseFloat(document.getElementById("height").value);
-          const skillInput = document.getElementById("skill").value;
-          const messageDiv = document.getElementById("message");
-
-          fetch("../backend/create-account.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username: usernameInput,
-              password: passwordInput,
-              name: nameInput,
-              img_url: imgUrlVal,
-              dob: dobVal,
-              weight: weightVal,
-              height: heightVal,
-              skill: skillInput,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.status === "success") {
-                messageDiv.className = "auth-message success";
-                messageDiv.textContent =
-                  "Account created successfully! Redirecting to login...";
-                setTimeout(() => {
-                  window.location.href = "login.html";
-                }, 2000);
-              } else {
-                messageDiv.className = "auth-message error";
-                messageDiv.textContent = data.message || "Registration failed.";
-              }
-            })
-            .catch((error) => {
-              messageDiv.className = "auth-message error";
-              messageDiv.textContent =
-                "An error occurred connecting to the server.";
-            });
-        });
-    </script>
+    <script src="create-account.js"></script>
   </body>
 </html>

@@ -12,11 +12,11 @@ $username = $data->username;
 $password = $data->password;
 
 try {
-    $dbPath = __DIR__ . '/gym_app.db';
-    $pdo = new PDO("sqlite:" . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO("sqlite:gym_app.db");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $stmt = $pdo->prepare("SELECT * FROM User WHERE username = :username AND password = :password");
+    // Check for User with matching username and password
+    $stmt = $db->prepare("SELECT * FROM User WHERE username = :username AND password = :password");
 
     $stmt->execute([
         ':username' => $username,

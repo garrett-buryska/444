@@ -334,12 +334,12 @@ body {
   font-weight: 500;
 }
 
-.profile-message.success {
-  color: #0f7a38;
+.error {
+  color: #ff5555;
 }
 
-.profile-message.error {
-  color: #b42318;
+.success {
+  color: #0f7a38;
 }
 
 .profile-actions {
@@ -519,6 +519,7 @@ body {
   margin: 20px auto;
   padding: 0 15px;
 }
+
 .card {
   background: white;
   border-radius: 10px;
@@ -527,12 +528,14 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   color: #333;
 }
+
 .card h3 {
   margin-top: 0;
   color: #d32f2f;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
 }
+
 .set-row {
   display: flex;
   justify-content: space-between;
@@ -541,6 +544,7 @@ body {
   border-bottom: 1px solid #f9f9f9;
   transition: background 0.3s;
 }
+
 .set-row:last-child {
   border-bottom: none;
 }
@@ -551,11 +555,13 @@ body {
   color: #888;
   text-decoration: line-through;
 }
+
 .set-row input[type="checkbox"] {
   width: 22px;
   height: 22px;
   cursor: pointer;
 }
+
 .btn-finish {
   display: block;
   width: 100%;
@@ -570,6 +576,7 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
+
 .btn-finish:hover {
   background: #b71c1c;
 }
@@ -670,14 +677,6 @@ nav + .auth-wrapper {
   font-weight: 500;
 }
 
-.auth-message.error {
-  color: #b42318;
-}
-
-.auth-message.success {
-  color: #0f7a38;
-}
-
 .auth-image-preview {
   width: 100%;
   max-height: 200px;
@@ -741,3 +740,168 @@ nav + .auth-wrapper {
 .history-exercises strong {
   color: #1a1a1a;
 }
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.workout-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+  padding-bottom: 10px;
+}
+
+.page-title {
+  margin: 5px 0;
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+#workout-display {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 5px;
+}
+
+.card {
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.info-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.info-container {
+  display: none;
+  background: #f4f4f4;
+  padding: 5px;
+  margin: 2px 0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.set-label {
+  min-width: 45px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.set-text-display {
+  font-size: 0.9rem;
+  color: #333;
+  font-style: italic;
+}
+
+.btn-finish {
+  width: 100%;
+  cursor: pointer;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  #workout-display {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-heading {
+  display: flex;
+  /* Align title-copy and button side-by-side */
+  justify-content: space-between;
+  /* Push title to left, button to right */
+  align-items: flex-start;
+  /* Keeps title and button aligned at the top */
+  margin-bottom: 30px;
+  /* Spacing below the header */
+}
+
+/* Ensure the copy container doesn't take up 100% width */
+.profile-heading-copy {
+  max-width: 620px;
+}
+
+/* Remove or reset the old profile-actions margin if it's interfering */
+.profile-actions {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Optional: adjust the button height slightly if it looks too high */
+.profile-save-button {
+  margin-top: 5px;
+}
+/* Specifically target only the profile page container */
+.profile-page {
+  transform: scale(0.9);
+  transform-origin: top center; /* Keeps the content centered and pinned to the top */
+  width: 111.11%; /* Offsets the 0.9 shrink to keep it full-width (1 / 0.9) */
+  margin-left: -5.55%; /* Recenters the offset width */
+}
+
+/* Optional: If the navbar looks too big compared to the 90% screen, 
+   you can wrap the entire body in a specific class for this page only */

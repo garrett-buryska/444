@@ -1,17 +1,16 @@
 <?php
 try {
-    $dbPath = __DIR__ . '/gym_app.db';
-    $pdo = new PDO('sqlite:' . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db = new PDO("sqlite:gym_app.db");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $workoutId = $_GET['id'] ?? null;
 
     if (!$workoutId) {
-        http_response_code(400);
         echo json_encode(['error' => 'No workout ID provided.']);
         exit;
     }
 
+    // query to fetch lift details along with activity information and set details for the given workout ID
     $query = "SELECT 
                 L.liftID, 
                 L.activity_name, 
@@ -21,18 +20,21 @@ try {
                 A.main_muscle_group, 
                 S.set_number, 
                 S.set_text,
-                S.completed
+                S.completed,
+                S.weight
               FROM Lift L
               JOIN Activities A ON L.activity_name = A.activity_name
               JOIN Sets S ON L.liftID = S.liftID
               WHERE L.workoutID = ?
               ORDER BY L.liftID, S.set_number";
 
-    $stmt = $pdo->prepare($query);
+    $stmt = $db->prepare($query);
     $stmt->execute([$workoutId]);
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $workoutData = [];
+    
+    // Process the results to structure them by lift and include sets as a nested array
     foreach ($results as $row) {
         $liftId = $row['liftID'];
 
@@ -51,14 +53,13 @@ try {
         $workoutData[$liftId]['sets'][] = [
             'set_number' => $row['set_number'],
             'set_text' => $row['set_text'],
-            'completed' => (bool) $row['completed']
+            'completed' => (bool) $row['completed'],
+            'weight' => (float) $row['weight']
         ];
     }
 
     echo json_encode(array_values($workoutData));
 
 } catch (Exception $e) {
-    http_response_code(500);
     echo json_encode(['error' => 'Server Error: ' . $e->getMessage()]);
 }
-?>
