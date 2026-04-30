@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <input type="checkbox" id="nav-toggle" class="nav-toggle" />
 
-        <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+        <label for="nav-toggle" class="nav-toggle-hamburger" aria-label="Toggle navigation menu">
           <span></span>
           <span></span>
           <span></span>
